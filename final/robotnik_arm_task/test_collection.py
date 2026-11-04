@@ -7,7 +7,8 @@ from unittest.mock import patch
 import subprocess
 
 import numpy as np
-from collect_expert import EpisodeRecorder, FEATURES, episode_jobs, dependency_check
+from collect_expert import (EpisodeRecorder, FEATURES, episode_jobs, dependency_check,
+                            recommended_workers, simulation_env)
 from moving_target import MovingTarget
 from robotnik_arm_control import BaseControllerParams, ArmControllerParams, make_catchable_pair
 
@@ -22,8 +23,21 @@ class CollectionTests(unittest.TestCase):
     def test_dependency_check_uses_headless_worker_environment(self):
         with patch('collect_expert.subprocess.run', return_value=subprocess.CompletedProcess([], 0, '', '')) as run:
             dependency_check()
-            self.assertEqual(run.call_args.kwargs['env']['ROBOENV_HEADLESS'], '1')
+            env = run.call_args.kwargs['env']
+            self.assertEqual(env['ROBOENV_HEADLESS'], '1')
+            self.assertEqual(env['OMP_NUM_THREADS'], '1')
+            self.assertEqual(env['OPENBLAS_NUM_THREADS'], '1')
+            self.assertEqual(env['MKL_NUM_THREADS'], '1')
             self.assertIn('import robotnik_arm_task', run.call_args.args[0])
+            self.assertEqual(simulation_env()['OMP_WAIT_POLICY'], 'PASSIVE')
+
+    def test_worker_count_follows_cores_and_memory(self):
+        gib = 1024 ** 3
+        self.assertEqual(recommended_workers(logical=24, physical=16, available_bytes=20 * gib), 16)
+        self.assertEqual(recommended_workers(logical=24, physical=16, available_bytes=6 * gib), 4)
+        self.assertEqual(recommended_workers(logical=8, physical=16, available_bytes=64 * gib), 8)
+        self.assertEqual(recommended_workers(logical=4, physical=0, available_bytes=None), 4)
+        self.assertEqual(recommended_workers(logical=16, physical=16, available_bytes=2 * gib), 1)
 
     def recorder(self, split='train_dart', balls=1):
         config = dict(sample_hz=100., wheel_noise_std=.08, arm_noise_std=.2,

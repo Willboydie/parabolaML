@@ -1,0 +1,42 @@
+[
+ {
+  "rate_hz": 25,
+  "predict_s": 2.0,
+  "execute_frac": 0.5,
+  "history": "none",
+  "history_s": 0.0,
+  "demos": 1000
+ },
+ {
+  "rate_hz": 25,
+  "predict_s": 5.0,
+  "execute_frac": 0.25,
+  "history": "none",
+  "history_s": 0.0,
+  "demos": 1000
+ },
+ {
+  "rate_hz": 10,
+  "predict_s": 2.0,
+  "execute_frac": 0.5,
+  "history": "none",
+  "history_s": 0.0,
+  "demos": 1000
+ },
+ {
+  "rate_hz": 10,
+  "predict_s": 5.0,
+  "execute_frac": 0.25,
+  "history": "none",
+  "history_s": 0.0,
+  "demos": 1000
+ },
+ {
+  "rate_hz": 25,
+  "predict_s": 2.0,
+  "execute_frac": 0.5,
+  "history": "stack",
+  "history_s": 0.5,
+  "demos": 1000
+ }
+]

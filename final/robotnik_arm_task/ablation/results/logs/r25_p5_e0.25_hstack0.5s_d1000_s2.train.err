@@ -1,0 +1,3 @@
+usage: train.py [-h] --config CONFIG --seed SEED --out OUT [--steps STEPS]
+                [--batch BATCH] [--lr LR] [--data DATA]
+train.py: error: unrecognized arguments: 25, "predict_s": 5.0, "execute_frac": 0.25, "history": "stack", "history_s": 0.5}

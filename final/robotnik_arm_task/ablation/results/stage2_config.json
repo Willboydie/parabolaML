@@ -1,0 +1,15 @@
+{
+  "rate_hz": 25,
+  "predict_s": 2.0,
+  "execute_frac": 0.5,
+  "history": "stack",
+  "history_s": 0.5,
+  "demos": 1000,
+  "trunk": "mlp_3x512",
+  "head": "mse_chunks",
+  "catch_rate_mean": 0.022,
+  "catch_rate_sd": 0.003,
+  "miss_mm_mean": 80.6,
+  "miss_mm_sd": 0.1,
+  "note": "Stage 1 winner. Ranking: mean catch rate; if seed spreads overlap, lower mean miss distance. This config overlaps 25 Hz with no history (3.5% ± 1.3% catch, 95 mm miss) and wins on miss. Fixed backbone and ceiling for every two-ball model."
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "rate_hz": 25,
+    "predict_s": 2.0,
+    "execute_frac": 0.5,
+    "history": "stack",
+    "history_s": 0.5,
+    "demos": 1000,
+    "drop_time": true
+  }
+]

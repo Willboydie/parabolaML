@@ -49,9 +49,9 @@ python collect_expert.py --balls 2 --dart 1 --normal 1 --validation 1 --test 1 -
 | `--wheel-noise-std` | 0.08 | Wheel-command noise standard deviation, rad/s |
 | `--arm-noise-std` | 0.2 | Arm-torque noise standard deviation, N m |
 | `--noise-hold-seconds` | 0.05 | How long to hold each perturbation before drawing another |
-| `--workers` | 1 | Number of independent episode subprocesses |
+| `--workers` | one per physical core | Independent episode processes. Each is limited to one math thread and pinned to its own core. The count drops when free RAM cannot hold them (1 GiB each, 2 GiB left for the OS). |
 | `--episode-timeout` | 600 | Wall-clock seconds allowed for each subprocess |
-| `--assets-dir` | Script folder | Folder containing `configs/robotnik_arm.json` and `models/` |
+| `--assets-dir` | Script folder, or the sibling RoboEnv checkout | Folder containing `configs/robotnik_arm.json` and `models/` |
 | `--resume` | Off | Verify configuration/source and skip already completed files |
 
 The collector always runs headless. Its explicit settings take precedence over

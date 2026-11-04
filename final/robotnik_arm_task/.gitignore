@@ -1,3 +1,7 @@
 __pycache__/
 expert_dataset/
 datasets/
+ablation/data/demos/
+ablation/data/*.npz
+ablation/results/models/
+ablation/results/smoke/
