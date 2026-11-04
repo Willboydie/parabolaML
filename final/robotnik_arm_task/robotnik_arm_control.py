@@ -248,3 +248,141 @@ def configure_gripper_fingers(sim, client, rid, fixed_angles=None):
 
     sim._SetMotorTorqueByIds = custom_set_torque
     return target_finger_angles
+#NEW
+#NEW
+class InterceptionExpert:  #NEW
+    # Estimate a constant-acceleration path from observations spanning two timesteps.  #NEW
+    def __init__(self, lower, upper):  #NEW
+        self.lower = np.asarray(lower, dtype=float)  #NEW
+        self.upper = np.asarray(upper, dtype=float)  #NEW
+        self.observations = []  #NEW
+        self.velocity = np.zeros(3)  #NEW
+        self.acceleration = np.zeros(3)  #NEW
+        self.has_left_volume = False  #NEW
+        self.intercept = None  #NEW
+        self.intercept_time = None  #NEW
+        self.goal_pos = None  #NEW
+        self.goal_bearing = 0.0  #NEW
+#NEW
+    def observe(self, time, position):  #NEW
+        self.has_left_volume |= bool(np.any(position < self.lower - 1e-6) or np.any(position > self.upper + 1e-6))  #NEW
+        self.observations.append((time, np.asarray(position, dtype=float).copy()))  #NEW
+        self.observations = self.observations[-3:]  #NEW
+        if len(self.observations) < 3:  #NEW
+            return False  #NEW
+        (t0, p0), (t1, p1), (t2, p2) = self.observations  #NEW
+        dt0, dt1 = t1 - t0, t2 - t1  #NEW
+        if min(dt0, dt1) <= 0:  #NEW
+            return False  #NEW
+        v0, v1 = (p1 - p0) / dt0, (p2 - p1) / dt1  #NEW
+        self.acceleration = 2 * (v1 - v0) / (dt0 + dt1)  #NEW
+        self.velocity = v1 + 0.5 * self.acceleration * dt1  #NEW
+        return True  #NEW
+#NEW
+    def flight_remaining(self, position):  #NEW
+        # Vertical motion may cross the roof twice; only the opposite side ends flight.  #NEW
+        exits = []  #NEW
+        for axis in (0, 1):  #NEW
+            v = self.velocity[axis]  #NEW
+            if abs(v) > 1e-9:  #NEW
+                boundary = self.upper[axis] if v > 0 else self.lower[axis]  #NEW
+                exits.append(max(0.0, (boundary - position[axis]) / v))  #NEW
+        return min(exits, default=np.inf)  #NEW
+#NEW
+    def predict(self, position, delay):  #NEW
+        horizon = max(0.0, min(float(delay), self.flight_remaining(position)))  #NEW
+        # Do not clamp height: the observed parabola continues above the roof.  #NEW
+        return position + self.velocity * horizon + 0.5 * self.acceleration * horizon**2  #NEW
+#NEW
+    def interception_allowed(self, position, delay):  #NEW
+        predicted = self.predict(position, delay)  #NEW
+        inside = np.all(predicted >= self.lower - 1e-5) and np.all(predicted <= self.upper + 1e-5)  #NEW
+        if not inside:  #NEW
+            return False  #NEW
+        if self.has_left_volume:  #NEW
+            return True  #NEW
+        if self.acceleration[2] >= -1e-7:  #NEW
+            return np.linalg.norm(self.velocity) < 1e-7  #NEW
+        peak_delay = -self.velocity[2] / self.acceleration[2]  #NEW
+        peak_height = position[2] + self.velocity[2] * peak_delay + 0.5 * self.acceleration[2] * peak_delay**2  #NEW
+        descending = self.velocity[2] + self.acceleration[2] * min(delay, self.flight_remaining(position)) < 0  #NEW
+        return bool(peak_height > self.upper[2] and descending)  #NEW
+#NEW
+    def arrival_options(self, intercept, base_pos, base_bearing, ee_pos, base_params, arm_params):  #NEW
+        # Compare approach directions and standoffs, including reaching without driving.  #NEW
+        direct = np.arctan2(intercept[1] - base_pos[1], intercept[0] - base_pos[0])  #NEW
+        bearings = np.r_[direct, base_bearing, np.linspace(-np.pi, np.pi, 32, endpoint=False)]  #NEW
+        preferred = float(np.interp(intercept[2], [0.1, 0.5, 1.1, 1.25], [0.80, 0.65, 0.65, 0.35]))  #NEW
+        vertical = intercept[2] - (base_pos[2] + 0.49)  #NEW
+        horizontal_limit = np.sqrt(max(0.0, (arm_params.reach_limit - 0.03)**2 - vertical**2))  #NEW
+        radii = np.unique(np.minimum([preferred, 0.35, 0.55, 0.75], horizontal_limit))  #NEW
+        poses = [(intercept[:2] - radius * np.array([np.cos(b), np.sin(b)]), b)  #NEW
+                 for radius in radii if radius >= 0.05 for b in bearings]  #NEW
+        if np.linalg.norm(intercept - np.r_[base_pos[:2], base_pos[2] + 0.49]) <= arm_params.reach_limit - 0.03:  #NEW
+            poses.append((base_pos[:2].copy(), base_bearing))  #NEW
+        options = []  #NEW
+        for goal, bearing in poses:  #NEW
+            drive = goal - base_pos[:2]  #NEW
+            distance = float(np.linalg.norm(drive))  #NEW
+            heading = np.arctan2(drive[1], drive[0]) if distance > base_params.pos_tol else base_bearing  #NEW
+            turns = abs(wrap_angle(heading - base_bearing)) + abs(wrap_angle(bearing - heading))  #NEW
+            # Reserve time for skid-steer slip and near-goal controller settling.  #NEW
+            base_time = distance / (0.8 * base_params.max_lin_vel) + turns / (0.65 * base_params.max_ang_vel)  #NEW
+            if distance > base_params.pos_tol or turns > base_params.ang_tol:  #NEW
+                base_time += 2.0  #NEW
+            yaw = wrap_angle(bearing - base_bearing)  #NEW
+            c, s = np.cos(yaw), np.sin(yaw)  #NEW
+            relative = ee_pos[:2] - base_pos[:2]  #NEW
+            carried_xy = goal + np.array([[c, -s], [s, c]]) @ relative  #NEW
+            carried_ee = np.r_[carried_xy, ee_pos[2]]  #NEW
+            arm_time = np.linalg.norm(intercept - carried_ee) / (0.65 * arm_params.max_cartesian_speed) + 2.5  #NEW
+            required = base_time + arm_time + 1.0  #NEW
+            options.append((required, distance, turns, goal, bearing))  #NEW
+        return options  #NEW
+#NEW
+    def plan(self, time, position, base_pos, base_bearing, ee_pos, base_params, arm_params, max_delay=240.0):  #NEW
+        # Earliest feasible time on a 0.1-second grid; break ties by less base travel/turning.  #NEW
+        horizon = min(240.0, max_delay)  #NEW
+        for delay in np.arange(0.1, horizon + 1e-9, 0.1):  #NEW
+            if not self.interception_allowed(position, delay):  #NEW
+                continue  #NEW
+            intercept = self.predict(position, delay)  #NEW
+            options = self.arrival_options(intercept, base_pos, base_bearing, ee_pos, base_params, arm_params)  #NEW
+            feasible = [option for option in options if option[0] <= delay]  #NEW
+            if feasible:  #NEW
+                required, distance, turns, goal, bearing = min(feasible, key=lambda option: (option[1], option[2], option[0]))  #NEW
+                self.intercept = intercept  #NEW
+                self.intercept_time = time + delay  #NEW
+                self.goal_pos = goal  #NEW
+                self.goal_bearing = bearing  #NEW
+                self.estimated_arrival_time = time + required  #NEW
+                self.planned_base_distance = distance  #NEW
+                return True  #NEW
+        self.intercept = None  #NEW
+        self.intercept_time = None  #NEW
+        return False  #NEW
+#NEW
+#NEW
+def make_catchable_pair(seed, speed, lower, upper, base_pos, base_bearing, ee_pos, dt, base_params, arm_params, max_attempts=200, target_count=2):  #NEW
+    # Reject trajectories without an estimated moving catch before the endpoint.  #NEW
+    from moving_target import MovingTarget  #NEW
+    rng = np.random.default_rng(seed)  #NEW
+    if target_count not in (1, 2):  #NEW
+        raise ValueError("target_count must be 1 or 2")  #NEW
+    targets, plans = [], []  #NEW
+    for _ in range(target_count):  #NEW
+        for attempt in range(max_attempts):  #NEW
+            target = MovingTarget(seed=int(rng.integers(0, 2**63)), speed=speed, lower=lower, upper=upper)  #NEW
+            expert = InterceptionExpert(lower, upper)  #NEW
+            for time in (0.0, dt, 2 * dt):  #NEW
+                expert.observe(time, target.position(time))  #NEW
+            delay = target.duration - 2 * dt - 0.2  #NEW
+            if delay > 0 and expert.plan(2 * dt, target.position(2 * dt), base_pos, base_bearing, ee_pos,  #NEW
+                                         base_params, arm_params, max_delay=delay):  #NEW
+                targets.append(target)  #NEW
+                plans.append(expert)  #NEW
+                break  #NEW
+        else:  #NEW
+            raise RuntimeError("Could not sample two feasible moving interceptions; check speed and controller limits")  #NEW
+    selected = int(rng.integers(0, len(targets))) if target_count == 2 else 0  #NEW
+    return targets, selected, plans  #NEW
