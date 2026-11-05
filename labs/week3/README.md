@@ -43,14 +43,14 @@ ln -s "$robo"/models models
 From the **RoboEnv root**:
 
 ```bash
-pixi run python "<full path>/week_3/2026/BO_for_pid_tuning.py"
+pixi run python "<full path>/labs/week3/BO_for_pid_tuning.py"
 ```
 
 or activate once and work from this folder:
 
 ```bash
 cd RoboEnv && pixi shell
-cd "<full path>/week_3/2026"
+cd "<full path>/labs/week3"
 python BO_for_pid_tuning.py
 ```
 

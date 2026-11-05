@@ -1,0 +1,27 @@
+# Bytecode and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local simulator checkout (own git history and pixi environment) and virtualenvs
+/RoboEnv/
+**/.pixi/
+**/.venv/
+**/venv/
+**/myvenv/
+**/ablation_venv/
+*.egg-info/
+
+# Lab copies or links of simulator assets
+labs/**/models/
+labs/**/configs/
+
+# Generated datasets, downloads, and checkpoints
+data/
+datasets/
+expert_dataset/
+*.pt
+*.pth

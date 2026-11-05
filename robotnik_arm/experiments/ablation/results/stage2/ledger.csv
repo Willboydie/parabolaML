@@ -1,0 +1,2 @@
+run_id,stage,model,miss_mm,catch_rate,record
+20261105-013349-oneball-deepsets,oneball-deepsets,r25_p2_e0.5_hstack0.5s_d2000_deepsets,36.06269104689875,0.06,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-013349-oneball-deepsets.json

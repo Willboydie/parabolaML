@@ -1,6 +1,6 @@
 # Expert data collection
 
-Use the same RoboEnv Python environment as the simulation. From this folder:
+Use the same RoboEnv Python environment as the simulation. From the `robotnik_arm` directory (the folder that contains `collect_expert.py`):
 
 ```bash
 python collect_expert.py --balls 2 --output datasets/two_balls
@@ -62,10 +62,10 @@ test episode seeds prevent shared trajectories; never randomly split rows from
 one episode across model splits. Keep validation and test out of model fitting.
 All records from `train_dart` and `train_normal` are training data.
 
-For example, to use the installed environment here:
+For example, from `robotnik_arm/` with the RoboEnv interpreter:
 
 ```bash
-/home/nick/projects/RoboEnv/.pixi/envs/default/bin/python collect_expert.py --balls 2 --workers 2 --output datasets/two_balls
+python collect_expert.py --balls 2 --workers 2 --output datasets/two_balls
 ```
 
 Resume requires the original dataset settings and unchanged source files. To
@@ -164,12 +164,13 @@ with np.load('datasets/two_balls/train_dart/episode_00000.npz', allow_pickle=Fal
 
 ## Missing simulation dependencies
 
-The collector checks worker imports before launching episodes. If your active
-`.venv` lacks matplotlib, PyBullet, Pinocchio or simulation_and_control, launch
-with the RoboEnv interpreter you use for the simulation instead. On this machine:
+The collector checks worker imports before launching episodes. If the active
+environment lacks matplotlib, PyBullet, Pinocchio or simulation_and_control,
+launch with the RoboEnv interpreter. From `robotnik_arm/`, after `pixi shell`
+in the `RoboEnv/` checkout:
 
 ```bash
-/home/nick/projects/RoboEnv/.pixi/envs/default/bin/python collect_expert.py --balls 1 --output datasets/one_ball --resume
+python collect_expert.py --balls 1 --output datasets/one_ball --resume
 ```
 
 The output path must be one shell argument. If a previous run saved no NPZ

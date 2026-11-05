@@ -380,6 +380,7 @@ def make_catchable_pair(seed, speed, lower, upper, base_pos, base_bearing, ee_po
             if delay > 0 and expert.plan(2 * dt, target.position(2 * dt), base_pos, base_bearing, ee_pos,  #NEW
                                          base_params, arm_params, max_delay=delay):  #NEW
                 targets.append(target)  #NEW
+                expert.sample_attempts = attempt + 1  #NEW
                 plans.append(expert)  #NEW
                 break  #NEW
         else:  #NEW

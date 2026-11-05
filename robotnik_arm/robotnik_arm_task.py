@@ -24,6 +24,7 @@ from robotnik_arm_control import (
 # Random moving target in a 5 x 5 m cuboid centred on the initial robot XY position.  #NEW
 # Height limits: 0.07 to 1.30 m; high parabolic paths leave the roof and return to opposite side faces.  #NEW
 from moving_target import MovingTarget  #NEW
+from paths import assets_dir
 TARGET_SEED = int(os.environ["ROBOENV_TARGET_SEED"]) if "ROBOENV_TARGET_SEED" in os.environ else None  #NEW
 TARGET_SPEED = float(os.environ["ROBOENV_TARGET_SPEED"]) if "ROBOENV_TARGET_SPEED" in os.environ else None  #NEW
 
@@ -58,7 +59,7 @@ def main(options=None):  #NEW
     # Configuration and Simulation Setup
     # --------------------------------------------------------------------------
     conf_file_name = "robotnik_arm.json"
-    cur_dir = options.get("assets_dir") or os.path.dirname(os.path.abspath(__file__))  #NEW
+    cur_dir = str(options.get("assets_dir") or assets_dir())  #NEW
     sim = pb.SimInterface(conf_file_name, conf_file_path_ext=cur_dir, use_gui=not headless)
 
     # Configure realistic ground contact and skid-steer friction dynamics

@@ -1,0 +1,159 @@
+{
+  "data": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\grid50_offset.npz",
+  "data_choice": "narrow_offset",
+  "wide_along_miss_mm": 39.06516713668717,
+  "reference_miss_mm": 38.23595621013194,
+  "hashes": {
+    "s0": "0a2f4a9220b9ad5b9ca0d5e01993cc00f7a83273c1a8be9d8352da4fbe80999c",
+    "s1": "f359b92d43b31616a5b47741ddaf5afb9de6ea046e22c84b1a8fe347015db98f",
+    "s2": "e6207103c940700156bdc8338b87fde5df784d6cd2982d665b35a53f85a45e1a"
+  },
+  "permutation_max_abs_diff": {
+    "s0": 0.0,
+    "s1": 0.0,
+    "s2": 0.0
+  },
+  "s0": {
+    "n": 200,
+    "catch_rate": 0.07,
+    "miss_mm": 35.56291305185462,
+    "median_miss_mm": 28.618076711975583,
+    "compensation": {
+      "along": {
+        "regression": 0.5078909549016734,
+        "median_when_offset": 0.5343678960701218,
+        "n_offset": 144,
+        "base_abs_median": 34.42003319418114,
+        "miss_abs_median": 19.107442720109965
+      },
+      "cross": {
+        "regression": 0.6144982153533365,
+        "median_when_offset": 1.0415493062230528,
+        "n_offset": 121,
+        "base_abs_median": 27.093943141604143,
+        "miss_abs_median": 9.391895631212769
+      }
+    },
+    "split": {
+      "n": 200,
+      "base_offset_median_mm": 50.40361305869093,
+      "base_offset_p90_mm": 94.21674071006096,
+      "base_along_abs_median_mm": 34.42003319418114,
+      "base_cross_abs_median_mm": 27.093943141604143,
+      "miss_along_abs_median_mm": 19.107442720109965,
+      "miss_cross_abs_median_mm": 9.391895631212769,
+      "miss_up_abs_median_mm": 13.18382102211596,
+      "miss_3d_mean_mm": 35.56291305185462,
+      "miss_3d_median_mm": 28.618076711975583,
+      "frac_up_at_least_10mm": 0.65,
+      "energy_share": {
+        "along": 0.38080977420952844,
+        "cross": 0.5346174424749782,
+        "up": 0.08457278331549328
+      }
+    }
+  },
+  "s1": {
+    "n": 200,
+    "catch_rate": 0.03,
+    "miss_mm": 36.751627004347554,
+    "median_miss_mm": 32.69289249456955,
+    "compensation": {
+      "along": {
+        "regression": 0.3832089760898326,
+        "median_when_offset": 0.4700241356842581,
+        "n_offset": 158,
+        "base_abs_median": 44.10259243315669,
+        "miss_abs_median": 24.915613527776188
+      },
+      "cross": {
+        "regression": 0.8579453944818951,
+        "median_when_offset": 1.02625248709687,
+        "n_offset": 120,
+        "base_abs_median": 25.01611493297174,
+        "miss_abs_median": 8.085972498355524
+      }
+    },
+    "split": {
+      "n": 200,
+      "base_offset_median_mm": 55.457792700283996,
+      "base_offset_p90_mm": 89.8987733882414,
+      "base_along_abs_median_mm": 44.10259243315669,
+      "base_cross_abs_median_mm": 25.01611493297174,
+      "miss_along_abs_median_mm": 24.915613527776188,
+      "miss_cross_abs_median_mm": 8.085972498355524,
+      "miss_up_abs_median_mm": 16.64052987738618,
+      "miss_3d_mean_mm": 36.751627004347554,
+      "miss_3d_median_mm": 32.69289249456955,
+      "frac_up_at_least_10mm": 0.72,
+      "energy_share": {
+        "along": 0.5485513440116572,
+        "cross": 0.21498275014359922,
+        "up": 0.23646590584474375
+      }
+    }
+  },
+  "s2": {
+    "n": 200,
+    "catch_rate": 0.08,
+    "miss_mm": 35.87353308449408,
+    "median_miss_mm": 31.460005052333862,
+    "compensation": {
+      "along": {
+        "regression": 0.4095468447090965,
+        "median_when_offset": 0.4430784946003508,
+        "n_offset": 164,
+        "base_abs_median": 39.272137106265134,
+        "miss_abs_median": 22.859958068642616
+      },
+      "cross": {
+        "regression": 0.9555872064722352,
+        "median_when_offset": 1.1304638187641103,
+        "n_offset": 144,
+        "base_abs_median": 34.15741744509669,
+        "miss_abs_median": 9.924751401228566
+      }
+    },
+    "split": {
+      "n": 200,
+      "base_offset_median_mm": 58.858554039689594,
+      "base_offset_p90_mm": 103.60731755554788,
+      "base_along_abs_median_mm": 39.272137106265134,
+      "base_cross_abs_median_mm": 34.15741744509669,
+      "miss_along_abs_median_mm": 22.859958068642616,
+      "miss_cross_abs_median_mm": 9.924751401228566,
+      "miss_up_abs_median_mm": 16.278977630443336,
+      "miss_3d_mean_mm": 35.87353308449408,
+      "miss_3d_median_mm": 31.460005052333862,
+      "frac_up_at_least_10mm": 0.745,
+      "energy_share": {
+        "along": 0.5709907342617176,
+        "cross": 0.17452578780840994,
+        "up": 0.25448347792987225
+      }
+    }
+  },
+  "deepsets": {
+    "miss_mm": 36.06269104689875,
+    "miss_mm_sd": 0.5033857144501013,
+    "median_miss_mm": 30.923658086293,
+    "median_miss_mm_sd": 1.7062203778146887,
+    "catch_rate": 0.06,
+    "catch_rate_sd": 0.02160246899469287,
+    "base_offset_median_mm": 54.906653266221504,
+    "base_offset_median_mm_sd": 3.4736458037511255,
+    "miss_along_abs_median_mm": 22.294338105509592,
+    "miss_along_abs_median_mm_sd": 2.4046699690085647,
+    "miss_cross_abs_median_mm": 9.134206510265619,
+    "miss_cross_abs_median_mm_sd": 0.772476418498167,
+    "miss_up_abs_median_mm": 15.36777617664849,
+    "miss_up_abs_median_mm_sd": 1.5513274089360296,
+    "frac_up_at_least_10mm": 0.7050000000000001,
+    "frac_up_at_least_10mm_sd": 0.04020779360604938,
+    "comp_along": 0.4335489252335341,
+    "comp_along_sd": 0.05365615132325008,
+    "comp_cross": 0.8093436054358222,
+    "comp_cross_sd": 0.14342716011849885,
+    "clearly_worse_than_38mm": false
+  }
+}

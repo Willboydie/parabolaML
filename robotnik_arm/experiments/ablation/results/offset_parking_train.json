@@ -1,0 +1,78 @@
+{
+  "s0": {
+    "n": 200,
+    "catch_rate": 0.04,
+    "miss_mm": 36.08636991384449,
+    "median_miss_mm": 33.33373830028819,
+    "compensation": {
+      "along": {
+        "regression": 0.41823882880308827,
+        "median_when_offset": 0.44134684349372344,
+        "n_offset": 159,
+        "base_abs_median": 37.389115373924824,
+        "miss_abs_median": 22.951224450654387
+      },
+      "cross": {
+        "regression": 0.9365053784016174,
+        "median_when_offset": 1.021251591589572,
+        "n_offset": 134,
+        "base_abs_median": 30.2195732926507,
+        "miss_abs_median": 10.583444358759262
+      }
+    }
+  },
+  "s1": {
+    "n": 200,
+    "catch_rate": 0.04,
+    "miss_mm": 41.66327603746724,
+    "median_miss_mm": 38.62152400250247,
+    "compensation": {
+      "along": {
+        "regression": 0.4526760377123815,
+        "median_when_offset": 0.4289324646751608,
+        "n_offset": 165,
+        "base_abs_median": 43.23292959983925,
+        "miss_abs_median": 28.770855053353607
+      },
+      "cross": {
+        "regression": 1.0615615017047129,
+        "median_when_offset": 1.0247827300759489,
+        "n_offset": 142,
+        "base_abs_median": 33.12321382289981,
+        "miss_abs_median": 10.026556083054743
+      }
+    }
+  },
+  "s2": {
+    "n": 200,
+    "catch_rate": 0.045,
+    "miss_mm": 36.958222679084066,
+    "median_miss_mm": 33.89123347853919,
+    "compensation": {
+      "along": {
+        "regression": 0.4154777199988535,
+        "median_when_offset": 0.4619372885803961,
+        "n_offset": 156,
+        "base_abs_median": 39.67252858639381,
+        "miss_abs_median": 22.59277324337818
+      },
+      "cross": {
+        "regression": 1.0361310839406177,
+        "median_when_offset": 1.0040722489042189,
+        "n_offset": 127,
+        "base_abs_median": 31.34124091154447,
+        "miss_abs_median": 9.67672438197642
+      }
+    }
+  },
+  "rel_add_d2000": {
+    "miss_mm_mean": 38.23595621013194,
+    "miss_mm_sd": 2.4494792249507875,
+    "median_miss_mm_mean": 35.282165260443286,
+    "catch_mean": 0.041666666666666664,
+    "comp_along": 0.4287975288381078,
+    "comp_along_sd": 0.016922240198454484,
+    "comp_cross": 1.0113993213489827,
+    "comp_cross_sd": 0.053966060658939476
+  }
+}

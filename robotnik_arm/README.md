@@ -43,15 +43,16 @@ Success requires a prior departure, return inside the box and EE distance below
 10 mm. The selected ball/path is orange-red/orange; the other is purple. The
 solid grey floor, thick box edges and automatically framed camera are retained.
 
-Run `python robotnik_arm_task.py` in the RoboEnv environment with `configs/`
-and `models/` beside the script. Settings:
+Run `python robotnik_arm_task.py` from this directory, in the RoboEnv environment.
+`configs/` and `models/` are read from this directory when they are present,
+and otherwise from the `RoboEnv/` checkout at the repository root. Settings:
 - `ROBOENV_TARGET_SEED`: optional reproducible pair of random trajectories.
 - `ROBOENV_TARGET_SPEED`: optional fixed positive launch speed in m/s.
 - `ROBOENV_HEADLESS=1`: disable GUI/plots.
 - `ROBOENV_MAX_STEPS`: step cap, default 180000.
 
 Example: `ROBOENV_TARGET_SEED=0 python robotnik_arm_task.py`.
-Run checks with `python -m unittest discover -p 'test_*.py'` in this folder.
+Run checks from this directory with `python -m unittest discover -s tests -t .`.
 Changed lines in the two robotnik Python files are marked `#NEW`.
 
 Catchability is checked against the current base pose, EE pose and controller
@@ -63,5 +64,5 @@ Selection is reproducible with `ROBOENV_TARGET_SEED`.
 Data collection is available through `collect_expert.py`. The default plan is
 200 noisy DART training episodes, 200 clean training episodes, 50 validation
 and 50 test episodes. Use `--balls 1` or `--balls 2` and separate output folders.
-See [DATA_COLLECTION.md](DATA_COLLECTION.md) for commands, noise settings,
+See [docs/DATA_COLLECTION.md](docs/DATA_COLLECTION.md) for commands, noise settings,
 resuming, outcome flags and the complete observation/action schema.

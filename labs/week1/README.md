@@ -50,15 +50,15 @@ ln -s "$robo"/models models     # or: cp -r "$robo"/models .
 From the **RoboEnv root** (pixi finds its manifest there):
 
 ```bash
-pixi run python "<full path>/week1/induction_simulator.py"
-pixi run python "<full path>/week1/cartesian_kinematic_controller.py"
+pixi run python "<full path>/labs/week1/induction_simulator.py"
+pixi run python "<full path>/labs/week1/cartesian_kinematic_controller.py"
 ```
 
 or activate once and work from this folder:
 
 ```bash
 cd RoboEnv && pixi shell
-cd "<full path>/week1"
+cd "<full path>/labs/week1"
 python induction_simulator.py
 ```
 
@@ -114,14 +114,14 @@ ln -s "$robo"/models models
 From the **RoboEnv root**:
 
 ```bash
-pixi run python "<full path>/week1/dynamic_regression.py"
+pixi run python "<full path>/labs/week1/dynamic_regression.py"
 ```
 
 or activate once and work from this folder:
 
 ```bash
 cd RoboEnv && pixi shell
-cd "<full path>/week1"
+cd "<full path>/labs/week1"
 python dynamic_regression.py
 ```
 

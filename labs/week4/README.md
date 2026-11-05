@@ -29,14 +29,14 @@ torch/torchvision do not fit into RoboEnv's default environment: conda-forge pyt
 From the **RoboEnv root**:
 
 ```bash
-pixi run -e ml python "<full path>/week_4/2026/mlp_mnist.py"
+pixi run -e ml python "<full path>/labs/week4/mlp_mnist.py"
 ```
 
 or activate once and work from this folder (recommended — the MNIST download lands in `./data`):
 
 ```bash
 cd RoboEnv && pixi shell -e ml
-cd "<full path>/week_4/2026"
+cd "<full path>/labs/week4"
 python mlp_mnist.py
 ```
 

@@ -19,7 +19,7 @@ The policy can finish a catch from a perfect expert pose (0.7 mm miss, 100% catc
 Checkpoints are **not in git** (see `.gitignore`). They live on this machine as ~5 MB files:
 
 ```
-final/robotnik_arm_task/ablation/results/models/
+robotnik_arm/experiments/ablation/results/models/
 ```
 
 **Winner — use this as the Stage 2 backbone**
@@ -36,7 +36,7 @@ The same config, other seeds (for spread): `..._s0.pt` / `..._s2.pt` and matchin
 To replay a catch locally:
 
 ```bash
-cd final/robotnik_arm_task/ablation
+cd robotnik_arm/experiments/ablation
 python show_catch.py --weights results/models/r25_p2_e0.5_hstack0.5s_d1000_s1.npz
 ```
 
@@ -90,7 +90,7 @@ un-z-score with per-horizon-step act_mean / act_std  →  relative command chunk
 
 | | |
 |---|---|
-| Class | `ChunkPolicy` (`ablation/policy.py`), `history='stack'` so `self.gru is None` |
+| Class | `ChunkPolicy` (`experiments/ablation/policy.py`), `history='stack'` so `self.gru is None` |
 | Trainable params | **1,267,076** (seed-1 log: `params: 1267076`) |
 | Input | `(B, 13, 42)` observations, oldest first. No past actions. |
 | Frames | `1 + round(0.5 × 25) = 13` at 25 Hz (12 prior ticks + current; 40 ms apart) |
@@ -164,10 +164,10 @@ What actually moved Stage 1: **policy rate** (25 Hz >> 10 Hz >> 5 Hz). Chunking:
 
 | Path | Role |
 |---|---|
-| `ablation/catch_env.py` | 1 ms sim, 25 Hz policy, 1 ms hold |
-| `ablation/policy.py` / `np_policy.py` | MLP + MSE chunk head |
-| `ablation/train.py` / `run_ablation.py` | GPU train, 16-way CPU eval |
-| `ablation/diagnose.py` | Parts 1–3 error diagnosis |
-| `ablation/results/models/` | checkpoints (gitignored) |
-| `ablation/results/runs/` | per-seed catch/miss JSON |
-| `ablation/data/seeds.json` | train/test episode seeds |
+| `experiments/ablation/catch_env.py` | 1 ms sim, 25 Hz policy, 1 ms hold |
+| `experiments/ablation/policy.py` / `np_policy.py` | MLP + MSE chunk head |
+| `experiments/ablation/train.py` / `run_ablation.py` | GPU train, 16-way CPU eval |
+| `experiments/ablation/diagnose.py` | Parts 1–3 error diagnosis |
+| `experiments/ablation/results/models/` | checkpoints (gitignored) |
+| `experiments/ablation/results/runs/` | per-seed catch/miss JSON |
+| `experiments/ablation/data/seeds.json` | train/test episode seeds |

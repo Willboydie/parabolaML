@@ -20,9 +20,19 @@ os.environ.setdefault('KMP_DUPLICATE_LIB_OK', 'TRUE')
 
 import numpy as np
 
-TASK_DIR = Path(__file__).resolve().parents[1]
-ASSETS_DIR = TASK_DIR.parents[1] / 'RoboEnv'
+
+def _task_dir():
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / 'robotnik_arm_task.py').is_file():
+            return candidate
+    raise FileNotFoundError('robotnik_arm_task.py not found above catch_env.py')
+
+
+TASK_DIR = _task_dir()
 sys.path.insert(0, str(TASK_DIR))
+from paths import assets_dir
+
+ASSETS_DIR = assets_dir()
 
 OBS_DIM = 42
 CMD_DIM = 18
@@ -227,33 +237,111 @@ class DartNoise:
         return self.value
 
 
+class CorrelatedCommandNoise:
+    """Per-dimension OU noise driven by correlated kicks.
+
+    Stationary marginal variance of dimension i is (alpha * sigma_i)**2.
+    Each step draws z ~ N(0, I) and kicks with L z, where L is the Cholesky
+    factor of the measured error covariance. Different group time constants
+    mean the stationary cross-covariance is only approximately that matrix;
+    the kick itself has exactly those correlations. alpha scales the kick.
+    """
+
+    def __init__(self, seed, cov, tau_s, dt, alpha=1.0):
+        self.rng = np.random.default_rng(seed)
+        tau = np.maximum(np.asarray(tau_s, dtype=np.float64), 1e-4)
+        self.decay = np.exp(-float(dt) / tau)
+        sigma = np.asarray(cov, dtype=np.float64)
+        sigma = 0.5 * (sigma + sigma.T)
+        evals, evecs = np.linalg.eigh(sigma)
+        sigma = (evecs * np.clip(evals, 0.0, None)) @ evecs.T
+        self.alpha = float(alpha)
+        jitter = 1e-12 * np.trace(sigma) / len(self.decay) + 1e-18
+        self.L = np.linalg.cholesky(sigma + jitter * np.eye(len(self.decay)))
+        self.gain = np.sqrt(np.maximum(1.0 - self.decay ** 2, 0.0))
+        self.x = self.alpha * (self.L @ self.rng.normal(size=len(self.decay)))
+
+    def __call__(self, t):
+        z = self.rng.normal(size=self.decay.shape[0])
+        self.x = self.decay * self.x + self.alpha * self.gain * (self.L @ z)
+        return self.x.copy()
+
+
+class LearnerCommandNoise:
+    """Ornstein–Uhlenbeck noise on the 18-D command, matched to measured learner error.
+
+    Each call advances one command period. Stationary variance is sigma**2 and the
+    autocorrelation is exp(-t/tau), so tau is the 1/e correlation time.
+    """
+
+    def __init__(self, seed, sigma, tau_s, dt):
+        self.rng = np.random.default_rng(seed)
+        self.sigma = np.asarray(sigma, dtype=np.float64)
+        self.tau = np.maximum(np.asarray(tau_s, dtype=np.float64), 1e-4)
+        self.dt = float(dt)
+        decay = np.exp(-self.dt / self.tau)
+        self.decay = decay
+        self.innov = self.sigma * np.sqrt(np.maximum(1.0 - decay * decay, 0.0))
+        self.x = self.rng.normal(size=self.sigma.shape) * self.sigma
+
+    def __call__(self, t):
+        self.x = self.decay * self.x + self.innov * self.rng.normal(size=self.sigma.shape)
+        return self.x.copy()
+
+
 def rollout(env, driver, seed, rate_hz, radius=0.01, stop_on_catch=True, noise=None, log=False,
-            until=None):
+            until=None, command_noise=None, quiet_tail_s=None, drift_ee=None, drift_limit=None):
     """Run one episode. The driver acts every 1/rate_hz seconds from the third step on.
 
     Returns a dict with success, min capture-window distance and catch time; with
-    ``log`` also 1 kHz arrays of observations, commands and applied actions.
+    ``log`` also 1 kHz arrays of observations, clean commands and applied actions.
+    ``command_noise``, if set, is added to the executed 18-D command (wheels clipped
+    to the speed limit, arm velocity refs to max joint speed). Logged ``cmd`` stays
+    the clean command. Arm position refs still pass through the lead/limit clip.
+    ``quiet_tail_s`` turns that noise off for the last few seconds of the episode.
+    ``drift_ee`` / ``drift_limit`` stop the episode when the end effector is more
+    than ``drift_limit`` metres from the clean reference at the same step.
     """
     env.reset(seed)
     driver.reset(env)
     stride = int(round(1.0 / (rate_hz * env.dt)))
     assert abs(stride * env.dt * rate_hz - 1.0) < 1e-9, 'policy period must be a whole number of sim steps'
     cmd = np.concatenate((np.zeros(4), env.q_init_arm, np.zeros(7)))
+    executed = cmd.copy()
     ready = False
     end_time = env.target.duration + CAP_AFTER_ENDPOINT
+    noise_off = None if quiet_tail_s is None else end_time - float(quiet_tail_s)
     wheel_limit = (env.base_params.max_lin_vel + env.base_params.max_ang_vel * env.base_params.wheel_base_width / 2) / env.base_params.wheel_radius
-    rows = dict(obs=[], cmd=[], applied=[], ready=[]) if log else None
+    qd_limit = env.arm_params.max_joint_vel
+    rows = None
+    if log:
+        rows = dict(obs=[], cmd=[], applied=[], ready=[])
+        if command_noise is not None:
+            rows['executed'] = []
     catch_time = None
+    drifted = False
     step = 0
     while True:
         t = step * env.dt
+        if drift_ee is not None and drift_limit is not None and step < len(drift_ee):
+            if np.linalg.norm(env.ee - drift_ee[step]) > drift_limit:
+                drifted = True
+                break
         if hasattr(driver, 'sense'):
             driver.sense(env, t)
         if step >= FIRST_TICK_STEP and (step - FIRST_TICK_STEP) % stride == 0:
             cmd, ready = driver.act(env, t, stride * env.dt)
             cmd = np.asarray(cmd, dtype=float)
-        q_ref = env.clip_reference(cmd[4:11])
-        applied = np.concatenate((cmd[:4], env.arm_torque(q_ref, cmd[11:18])))
+            executed = cmd.copy()
+            if command_noise is not None:
+                noisy = ready and (noise_off is None or t < noise_off)
+                if noisy:
+                    delta = np.asarray(command_noise(t), dtype=float)
+                    executed = cmd + delta
+                    executed[:4] = np.clip(executed[:4], -wheel_limit, wheel_limit)
+                    executed[11:18] = np.clip(executed[11:18], -qd_limit, qd_limit)
+        q_ref = env.clip_reference(executed[4:11])
+        applied = np.concatenate((executed[:4], env.arm_torque(q_ref, executed[11:18])))
         if noise is not None and ready:
             applied = applied + noise(t)
             applied[:4] = np.clip(applied[:4], -wheel_limit, wheel_limit)
@@ -268,6 +356,8 @@ def rollout(env, driver, seed, rate_hz, radius=0.01, stop_on_catch=True, noise=N
             rows['cmd'].append(cmd.astype(np.float32))
             rows['applied'].append(applied.astype(np.float32))
             rows['ready'].append(ready)
+            if command_noise is not None:
+                rows['executed'].append(executed.astype(np.float32))
         if until is not None and t + 1e-12 >= until:
             break
         if (catch_time is not None and stop_on_catch and t >= catch_time + CATCH_LINGER) or t >= end_time:
@@ -275,7 +365,8 @@ def rollout(env, driver, seed, rate_hz, radius=0.01, stop_on_catch=True, noise=N
         env.step(applied[:4], applied[4:])
         step += 1
     result = dict(seed=int(seed), success=catch_time is not None, min_dist=float(env.min_dist),
-                  catch_time=catch_time, steps=step + 1, duration=float(env.target.duration))
+                  catch_time=catch_time, steps=step + 1, duration=float(env.target.duration),
+                  drift_truncated=drifted)
     if log:
         result['arrays'] = {k: np.asarray(v) for k, v in rows.items()}
     return result

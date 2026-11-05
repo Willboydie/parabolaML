@@ -1,0 +1,149 @@
+{
+  "n_seeds": 20,
+  "rate_hz": 25,
+  "ang_tol_rad": 0.05,
+  "query_catch_rate": 1.0,
+  "phases": {
+    "align": {
+      "n": 448,
+      "wheel_agree": 448,
+      "fresh_yaw": 400,
+      "issued_drive": 20,
+      "fresh_yaw_issued_drive": 0,
+      "err_over_tol": 429,
+      "agree_frac": 1.0,
+      "fresh_yaw_frac": 0.8928571428571429,
+      "issued_drive_frac": 0.044642857142857144,
+      "yaw_instead_of_drive_frac": 0.0,
+      "err_over_tol_frac": 0.9575892857142857,
+      "wheel_l2_median_across_eps": 0.0
+    },
+    "drive": {
+      "n": 3409,
+      "wheel_agree": 3191,
+      "fresh_yaw": 127,
+      "issued_drive": 3389,
+      "fresh_yaw_issued_drive": 107,
+      "err_over_tol": 238,
+      "agree_frac": 0.9360516280434145,
+      "fresh_yaw_frac": 0.03725432678204752,
+      "issued_drive_frac": 0.9941331768847169,
+      "yaw_instead_of_drive_frac": 0.031387503666764446,
+      "err_over_tol_frac": 0.06981519507186858,
+      "wheel_l2_median_across_eps": 0.0
+    },
+    "orient": {
+      "n": 135,
+      "wheel_agree": 135,
+      "fresh_yaw": 71,
+      "issued_drive": 0,
+      "fresh_yaw_issued_drive": 0,
+      "err_over_tol": 135,
+      "agree_frac": 1.0,
+      "fresh_yaw_frac": 0.5259259259259259,
+      "issued_drive_frac": 0.0,
+      "yaw_instead_of_drive_frac": 0.0,
+      "err_over_tol_frac": 1.0,
+      "wheel_l2_median_across_eps": 0.0
+    },
+    "done": {
+      "n": 4256,
+      "wheel_agree": 4103,
+      "fresh_yaw": 153,
+      "issued_drive": 0,
+      "fresh_yaw_issued_drive": 0,
+      "err_over_tol": 4256,
+      "agree_frac": 0.9640507518796992,
+      "fresh_yaw_frac": 0.03594924812030075,
+      "issued_drive_frac": 0.0,
+      "yaw_instead_of_drive_frac": 0.0,
+      "err_over_tol_frac": 1.0,
+      "wheel_l2_median_across_eps": 0.0
+    }
+  },
+  "perturbations": {
+    "none": {
+      "n": 20,
+      "applied": 0,
+      "catch_rate": null,
+      "miss_mm_median": null,
+      "miss_mm_max": null,
+      "realigned": 0,
+      "yaw_tick_frac": 0.0
+    },
+    "heading +0.0873": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 1.0,
+      "miss_mm_median": 0.10145158546841292,
+      "miss_mm_max": 1.7245775262127527,
+      "realigned": 0,
+      "yaw_tick_frac": 0.017159843264423727
+    },
+    "heading -0.0873": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 1.0,
+      "miss_mm_median": 0.33623304161200235,
+      "miss_mm_max": 1.826056404416178,
+      "realigned": 0,
+      "yaw_tick_frac": 0.01892147587511826
+    },
+    "heading +0.1745": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 0.7,
+      "miss_mm_median": 0.21604168124530335,
+      "miss_mm_max": 1165.53198113035,
+      "realigned": 6,
+      "yaw_tick_frac": 0.0437094682230869
+    },
+    "heading -0.1745": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 0.65,
+      "miss_mm_median": 0.1950040559672419,
+      "miss_mm_max": 1162.1718745454045,
+      "realigned": 7,
+      "yaw_tick_frac": 0.048347691912048345
+    },
+    "lateral +0.0500": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 1.0,
+      "miss_mm_median": 0.8706628910417237,
+      "miss_mm_max": 1.5159387363640004,
+      "realigned": 0,
+      "yaw_tick_frac": 0.013243243243243243
+    },
+    "lateral -0.0500": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 1.0,
+      "miss_mm_median": 0.47724858990678165,
+      "miss_mm_max": 1.712020096208893,
+      "realigned": 0,
+      "yaw_tick_frac": 0.016214025131738953
+    },
+    "lateral +0.1000": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 1.0,
+      "miss_mm_median": 0.13354144768608583,
+      "miss_mm_max": 1.0951673714537804,
+      "realigned": 0,
+      "yaw_tick_frac": 0.02364864864864865
+    },
+    "lateral -0.1000": {
+      "n": 20,
+      "applied": 20,
+      "catch_rate": 1.0,
+      "miss_mm_median": 0.30887248751312907,
+      "miss_mm_max": 1.6322050283334562,
+      "realigned": 0,
+      "yaw_tick_frac": 0.02445945945945946
+    }
+  },
+  "elapsed_s": 103.65023040771484,
+  "heading_10deg_misses": "13 of 40. First command stays drive (v=0.245 m/s, |w|=0.30). Align resumes ~1 s after the original intercept, and that tick is the miss-triggered replan."
+}

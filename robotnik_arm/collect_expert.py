@@ -33,6 +33,8 @@ import threading
 
 import numpy as np
 
+from paths import assets_dir
+
 # A headless PyBullet and Pinocchio process is budgeted at 1 GiB. The reserve
 # stays with the OS. Dropping workers to stay inside free RAM is faster than paging.
 WORKER_RAM_BYTES = 1024 ** 3
@@ -227,17 +229,10 @@ def process_kwargs():
 def default_assets_dir():
     """Folder with configs/robotnik_arm.json and models/.
 
-    The task folder is used when it contains them. This checkout keeps the
-    robot description in the sibling RoboEnv project.
+    The project directory is used when it contains them. Otherwise the search
+    walks parents for a RoboEnv checkout.
     """
-    script_dir = Path(__file__).resolve().parent
-    candidates = [script_dir]
-    if len(script_dir.parents) > 1:
-        candidates.append(script_dir.parents[1] / 'RoboEnv')
-    for candidate in candidates:
-        if (candidate / 'configs' / 'robotnik_arm.json').is_file() and (candidate / 'models').is_dir():
-            return candidate
-    return script_dir
+    return assets_dir()
 
 
 def simulation_env():
@@ -439,7 +434,7 @@ def main():
     parser.add_argument('--workers', type=int, default=None,
                         help='Episode processes (default: one per physical core, single-threaded, capped by free RAM)')
     parser.add_argument('--assets-dir', type=Path, default=None,
-                        help='Folder with configs/robotnik_arm.json and models/ (default: this folder, or the sibling RoboEnv checkout)')
+                        help='Folder with configs/robotnik_arm.json and models/ (default: this folder, or a RoboEnv checkout above it)')
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('--episode-timeout', type=float, default=600.)

@@ -1,0 +1,9 @@
+# Metadata only. The labs and the arm task run in the RoboEnv pixi environment.
+# This repository is not installed with pip. See README.md.
+
+[project]
+name = "parabola-ml"
+version = "0.1.0"
+description = "Course labs and a learned policy for catching ballistic targets with a mobile manipulator."
+readme = "README.md"
+requires-python = ">=3.10"
