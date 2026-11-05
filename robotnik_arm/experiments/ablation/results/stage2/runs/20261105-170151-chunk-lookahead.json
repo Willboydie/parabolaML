@@ -1,0 +1,57 @@
+{
+  "run_id": "20261105-170151-chunk-lookahead",
+  "stage": "chunk-lookahead",
+  "model": "r25_p2_e0.5_hstack0.5s_d2000_deepsets",
+  "note": "full-chunk forward speed and predicted stop time on held-out expert states",
+  "started": "2026-11-05T17:01:51",
+  "config": {
+    "bin_s": 0.1,
+    "move_v": 0.02
+  },
+  "command": [
+    "chunk_lookahead.py"
+  ],
+  "seeds": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "rate50": "r50_p1_e0.5_hstack0.24s_d2000_deepsets"
+  },
+  "git": {
+    "commit": "f8fcd054021c22f58d49a14ccd9cd32d6e5cd787",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/.gitignore",
+      "?? robotnik_arm/experiments/ablation/chunk_lookahead.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T17:01:57",
+  "metrics": {
+    "miss_mm": 0.6787605118653959,
+    "catch_rate": 0.5527619047619048
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\chunk_lookahead.json",
+      "bytes": 86961,
+      "sha256": "9d8227fb9fcb8d50ed99bb6cfbcef8511a3c9616304e179b1d2647dd76280d58"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\chunk_lookahead.png",
+      "bytes": 52639,
+      "sha256": "49ed5a46350501e3e7918da0705761bd2d0d08def7d0dc125a9238c385b8e4cb"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "run_id": "20261105-170422-chunk-lookahead",
+  "stage": "chunk-lookahead",
+  "model": "r25_p2_e0.5_hstack0.5s_d2000_deepsets",
+  "note": "full-chunk forward speed and predicted stop time on held-out expert states",
+  "started": "2026-11-05T17:04:22",
+  "config": {
+    "bin_s": 0.1,
+    "move_v": 0.02
+  },
+  "command": [
+    "chunk_lookahead.py"
+  ],
+  "seeds": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "rate50": "r50_p1_e0.5_hstack0.24s_d2000_deepsets"
+  },
+  "git": {
+    "commit": "f8fcd054021c22f58d49a14ccd9cd32d6e5cd787",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/.gitignore",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      "?? robotnik_arm/experiments/ablation/chunk_lookahead.py",
+      "?? robotnik_arm/experiments/ablation/results/stage2/chunk_lookahead.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/chunk_lookahead.png",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-170151-chunk-lookahead.json"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T17:04:31",
+  "metrics": {
+    "miss_mm": 0.027947786024461078,
+    "catch_rate": 0.5383
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\chunk_lookahead.json",
+      "bytes": 88004,
+      "sha256": "e819f314bbe073dce12f84905ed692170dc6ddb1f5b071955f706602402c47f5"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\chunk_lookahead.png",
+      "bytes": 52532,
+      "sha256": "01555b2c74ec39eb5b97bd55cd40a3b6d5ce8a6b6106cf5b68a37c5a15f4dc7a"
+    }
+  ]
+}

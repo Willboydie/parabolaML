@@ -1,0 +1,50 @@
+{
+  "run_id": "20261105-170630-handoff-stop",
+  "stage": "handoff-stop",
+  "model": "r25_p2_e0.5_hstack0.5s_d2000_deepsets",
+  "note": "expert drives until 2, 1 and 0.5 s before its stop, then the policy; along-track error at the catch",
+  "started": "2026-11-05T17:06:30",
+  "config": {
+    "taus": [
+      2.0,
+      1.0,
+      0.5
+    ],
+    "rate_hz": 25
+  },
+  "command": [
+    "handoff_stop.py"
+  ],
+  "seeds": {
+    "test": 200,
+    "seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "git": {
+    "commit": "f8fcd054021c22f58d49a14ccd9cd32d6e5cd787",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/.gitignore",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      "?? robotnik_arm/experiments/ablation/chunk_lookahead.py",
+      "?? robotnik_arm/experiments/ablation/handoff_stop.py",
+      "?? robotnik_arm/experiments/ablation/results/stage2/chunk_lookahead.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/chunk_lookahead.png",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-170151-chunk-lookahead.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-170422-chunk-lookahead.json"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  }
+}

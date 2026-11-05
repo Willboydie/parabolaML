@@ -8,7 +8,7 @@ The main Stage 2 runs are done, with one clear result and one failure.
 
 **The averaging failure is real.** Told which ball to catch, the oracle catches 86.2%, the same as the one-ball robot on those throws (81.8%) within noise. The squared-error robot, left to choose for itself, catches 2.5%, and half its misses end between the two balls.
 
-**The mixture density network (MDN), the proposed fix, does not catch at all.** It manages 0.5–1.0% on two balls, and only 0.2% on one ball, where there is nothing to choose between. So its failure is not about choosing a ball; something in the MDN itself breaks once it drives the robot. It fits its training data well, so the next job is a short set of diagnostic tests to find where it breaks.
+**The mixture density network (MDN), the proposed fix, does not catch at all.** It manages 0.5–1.0% on two balls, and 0.2% on one ball, where it misses by 1.7 m. That is worse than the squared-error robot, which averages two balls and misses by 814 mm. It fits its training data, so a miss of that size is a reason to look for a mechanical fault before a modelling one. The one-ball result bears on choosing only if the MDN trained on one-ball scenes. That check is first in [What comes next](#what-comes-next).
 
 The scripts, checkpoints, and result files behind the numbers below are listed in [Files](#files).
 
@@ -176,7 +176,7 @@ What is known so far:
 - **The selection rule doesn't matter.** The two rules give the same catch outcome on 99% of scenes, and all three seeds are at or below 1.5%.
 - **In the loop, it is confident but unsteady.** The top weight is about 0.95, four of the five components get used, and the chosen component changes about three times per episode.
 
-A one-ball miss of 1.6–1.7 m means the robot barely gets to the ball. *Plain version:* the MDN learned the examples, but when it drives the robot itself, something goes wrong long before the catch. Because it fails with one ball, the cause isn't the choice between balls. Full record: `robotnik_arm/experiments/ablation/results/stage2/mdn_compare.json`, written by `eval_mdn.py`.
+A one-ball miss of 1.6–1.7 m means the robot barely gets to the ball, a larger miss than the squared-error robot's 814 mm while averaging two balls. *Plain version:* the MDN learned the examples, but when it drives the robot itself, something goes wrong long before the catch. Reading that as evidence about choosing needs the premise check below. The training script loads the two-ball grid only. Full record: `robotnik_arm/experiments/ablation/results/stage2/mdn_compare.json`, written by `eval_mdn.py`.
 
 ## The 50 mm decision
 
@@ -191,19 +191,52 @@ It changes two things:
 
 ## What comes next
 
-The two-ball comparison landed on the first row of the plan's decision table: the oracle matched the ceiling, and the squared-error robot fell far below with many misses between the balls. That called for the MDN, which was built and fails. The next step is finding out why. The tests are ordered cheapest first, and the first three need about an hour.
+The two-ball comparison landed on the first row of the plan's decision table: the oracle matched the ceiling, and the squared-error robot fell far below with many misses between the balls. That called for the MDN, which was built and fails. A mixture that fits its training data should not miss by 1.7 m when there is one right answer, and that miss is larger than the squared-error robot's 814 mm while averaging two balls. Look for a mechanical cause first and a modelling cause second. The premise check takes about five minutes. The run-time check is the one most likely to find a fault of this size. The later tests are worth running once those two are clean.
 
-1. **MDN with one component (K = 1).** A one-component mixture is a squared-error model that also learns a spread. On one ball it should behave like the ceiling. If it also fails, the problem is in the MDN code path, not in having several components.
-2. **Check the run-time code against training.** Feed the same observations to the training model and to the NumPy rollout version, and compare the chunk each produces: weights, component means, and undoing the standardisation. A 1.7 m miss is the size a bug would produce.
-3. **Hand-off test.** Let the expert drive until 0.5, 1, 2 and 4 s before the catch, then hand over to the MDN.
+0. **Check the premise.** Was the MDN trained on any one-ball scenes? `train_mdn.py` loads `data/grid50_two_ball.npz` and describes the run as two-ball data only. Confirm the grid has two balls in every row. If the MDN only saw two-ball scenes, a one-ball input is new to it. With DeepSets, adding up one ball's features instead of two shifts the input the head sees. In that case "it fails even with one ball, so the problem isn't choosing" does not follow.
+
+   **Control.** Run the two-ball squared-error robot on the one-ball test scenes.
+   - If that also collapses, one-ball scenes are not a clean test for either model. The argument has to rest on the two-ball results and the hand-off test.
+   - If it still catches about as well as the ceiling, one-ball scenes are a fair test, and the MDN's 1.7 m miss belongs to the MDN.
+
+1. **Check the run-time code against training.** This is the cheapest test and the most likely to find a 1.7 m fault. Take about 100 training observations, run both the PyTorch model and the NumPy rollout, and compare the maximum difference at each stage:
+   - the raw logits and the weights after softmax;
+   - the component means before un-standardising;
+   - the final chunk after un-standardising.
+
+   A gap that starts at one stage, with the stage before it still matching, names the fault. The usual culprits:
+   - the output reshaped in a different order (component × time × action) in NumPy than in training;
+   - softmax applied over the wrong axis;
+   - un-standardising with the wrong statistics.
+
+   If every stage matches, the rollout is a faithful copy of the trained model, and the 1.7 m miss is not a translation between the two.
+
+   **Free test, same pass.** Compare the MDN's chunk with the ceiling's chunk for the same one-ball observation. They should be close.
+   - If one-ball inputs are new to the MDN, a chunk far from the ceiling is the shifted sum from the premise check, which is what that check already predicts.
+   - If one-ball inputs are familiar and the chunk is still far from the ceiling, the trained MDN itself is outputting the wrong motion. The rollout matching training would then mean the fault is in the learned weights, and a run-time translation bug is ruled out.
+   - If the chunk is close to the ceiling here, while the robot still misses by 1.7 m in the loop, the fault shows up only once the chunk is executed. That points on to the hand-off test.
+
+2. **MDN with one component (K = 1).** A one-component mixture is a squared-error model that also learns a spread. On one ball it should behave like the ceiling. Run it if the premise check says one-ball scenes are a fair test.
+   - If K = 1 also fails, the problem is in the MDN code path, the part shared with the five-component model.
+   - If K = 1 catches like the ceiling, several components are what breaks the robot, and tests 4–6 say which part.
+
+3. **Hand-off test.** Let the expert drive until 0.5, 1, 2 and 4 s before the catch, then hand over to the MDN. If the premise check retires the one-ball scenes, this is where that argument moves.
    - If it misses even from 0.5 s, it can't act well from good states, which points to a bug or a poor fit.
    - If it is fine late and fails early, the error builds up over the episode, as in Stage 1, made worse by switching components.
-4. **Check the weights on unseen states.** On held-out expert states, compare the error of the highest-weight component (what the robot uses) with the error of the best-matching component. If the highest-weight one is often wrong, the weights are what's failing, not the components.
-5. **What do the components stand for?** With one ball there's no ball choice, yet four components get used. Tag every training row with the expert's phase (align, drive, orient, done) and whether it had noise added. Then see which component wins for each tag.
-   - If components line up with phases, the MDN is choosing between "spin", "drive" and "hold" at moments where the squared-error model averaged them into smooth driving. That would echo the DAgger failure.
-6. **Watch the robot.** In rollouts, log the base speed and heading alongside the chosen component. This shows whether the robot spins, stalls or holds when the component switches.
 
-If tests 1–3 point to a bug, fix it and rerun. If the MDN is working as designed and still fails, the fallbacks from the plan are:
+4. **Check the weights on unseen states.** On held-out expert states, compare the error of the highest-weight component (what the robot uses) with the error of the best-matching component.
+   - If the highest-weight one is often wrong, the weights are what's failing. The components themselves may still hold the right actions.
+   - If the highest-weight component is also the closest, the weights are doing their job on expert states. A miss in the loop then comes from states the expert never visits, which the hand-off test and the rollout log cover.
+
+5. **What do the components stand for?** Tag every training row with the expert's phase (align, drive, orient, done) and whether it had noise added. Then see which component wins for each tag. Do this on the two-ball training rows. The one-ball rollout, where four components get used with no ball to choose, is a separate input, and test 0 decides whether it counts.
+   - If components line up with phases, the MDN is choosing between "spin", "drive" and "hold" at moments where the squared-error model averaged them into smooth driving. That would echo the DAgger failure.
+   - If they line up with neither phase nor noise, the split is some other feature of the action, and the phase story is out.
+
+6. **Watch the robot.** In rollouts, log the base speed and heading alongside the chosen component.
+   - If speed or heading jumps when the component changes, switching is kicking the trajectory off.
+   - If the motion stays smooth and the hand still misses by metres, the chosen actions are wrong even while the choice is steady.
+
+If the premise check, the run-time check, or the one-component model points to a bug, fix it and rerun. If the MDN is working as designed and still fails, the fallbacks from the plan are:
 
 - a head that first classifies which ball, then regresses the motion for that ball;
 - one mixture over the ball choice only, with motion regressed separately;
@@ -299,14 +332,15 @@ The ball-swap check is already code. `test_deepsets.py` permutes the balls, and 
 
 ### Tests in "What comes next"
 
-These six are not scripts yet. The pieces to extend:
+These are not scripts yet, apart from the pieces named below.
 
-1. **K = 1.** `Config.n_components` in `config.py`. `train_mdn.py` passes `n_components=5`.
-2. **Training net against the NumPy rollout.** `policy.export_numpy` writes the `.npz`. `eval_mdn.check_mdn` compares torch and NumPy on a made-up batch. A comparison on real observations still has to be written.
+0. **Premise.** `train_mdn.py` loads `data/grid50_two_ball.npz`, and the run note says two-ball data only. Confirm every training row has two balls. The control rolls `twoball_mse_s{0,1,2}` out on the one-ball scenes in `data/seeds.json`. That scoring pass still has to be written. The ceiling's one-ball scoring in `train_deepsets_oneball.py` is the pattern.
+1. **Training net against the NumPy rollout, three stages.** `policy.export_numpy` writes the `.npz`. `eval_mdn.check_mdn` compares torch and NumPy on a made-up batch, and only the weights and the normalised means. A comparison on about 100 real training rows, reporting the logits, the weights after softmax, the normalised means, and the chunk after undoing the standardisation, still has to be written. The chunk after undoing the standardisation is what `MDNDriver` stores, from `act_mean` and `act_std`. The ceiling chunk for the same observation is `NumpyPolicy.predict_set` on `r25_p2_e0.5_hstack0.5s_d2000_deepsets_s{0,1,2}`.
+2. **K = 1.** `Config.n_components` in `config.py`. `train_mdn.py` passes `n_components=5`.
 3. **Hand-off.** The one-ball pattern is `diagnose.py` and `run_relative.handoff_episode`. An MDN hand-off still has to be written; the driver to hand to is `MDNDriver`.
 4. **Weights on held-out states.** Training-row diagnostics are on the checkpoint under `meta.diagnostics`, and the last row of each seed is copied into `two_ball_mdn_train.json`.
 5. **What the components stand for.** Expert phases are `align`, `drive`, `orient`, `done` on `BaseNavState` in `robotnik_arm_control.py`. `expert_phase_tests.py` is an earlier Stage 1 probe, not this tagging job.
-6. **Base motion beside the chosen component.** `MDNDriver.act` already appends `choices` and `max_pi` on each replan.
+6. **Base motion beside the chosen component.** `MDNDriver.act` already appends `choices` and `max_pi` on each replan. Speed and heading still have to be logged beside those.
 
 ## Glossary
 

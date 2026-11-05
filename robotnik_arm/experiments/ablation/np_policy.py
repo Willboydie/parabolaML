@@ -55,18 +55,23 @@ class NumpyPolicy:
         return x
 
     def _mixture_from_embedding(self, z):
-        """Trunk features to ``(pi, mu_norm)``. ``mu_norm`` is (K, H, act) in normalized units."""
+        """Trunk features to raw logits, softmax weights, and normalized means.
+
+        ``mu`` is (K, H, act). The softmax subtracts the max logit, which does not
+        change the weights. The raw logits are the values before that shift.
+        """
         k = self.cfg.n_components
         horizon = self.cfg.horizon
         act = self.act_std.shape[-1]
         pi_w, pi_b = self.mixture['pi']
         logits = z @ pi_w + pi_b
+        raw = np.array(logits, copy=True)
         logits = logits - logits.max()
         pi = np.exp(logits)
         pi = pi / pi.sum()
         mu_w, mu_b = self.mixture['mu']
         mu = (z @ mu_w + mu_b).reshape(k, horizon, act)
-        return pi.astype(np.float32), mu.astype(np.float32)
+        return raw.astype(np.float32), pi.astype(np.float32), mu.astype(np.float32)
 
     def _encode_set(self, frames, oracle_slot):
         """frames (N, F, 42) to trunk features."""
@@ -89,7 +94,20 @@ class NumpyPolicy:
         """frames (N, F, 42). Returns ``pi`` (K,) and normalized means (K, H, act)."""
         if self.mixture is None:
             raise RuntimeError('mdn_components is the mixture head')
-        return self._mixture_from_embedding(self._encode_set(frames, oracle_slot))
+        _raw, pi, mu = self._mixture_from_embedding(self._encode_set(frames, oracle_slot))
+        return pi, mu
+
+    def mdn_stages(self, frames, oracle_slot=None):
+        """frames (N, F, 42). Logits, weights, normalized means, un-standardised chunks.
+
+        ``chunk`` is (K, H, act), the action ``MDNDriver`` would execute for every
+        component: normalized mean times ``act_std``, plus ``act_mean``.
+        """
+        if self.mixture is None:
+            raise RuntimeError('mdn_stages is the mixture head')
+        raw, pi, mu = self._mixture_from_embedding(self._encode_set(frames, oracle_slot))
+        chunk = (mu * self.act_std + self.act_mean).astype(np.float32)
+        return raw, pi, mu, chunk
 
     def _predict_deepsets(self, frames):
         """frames: (F, 42) one-ball observations, oldest first."""
