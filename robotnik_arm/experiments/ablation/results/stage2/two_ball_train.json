@@ -1,0 +1,12 @@
+{
+  "data": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\grid50_two_ball.npz",
+  "hashes": {
+    "mse_s0": "39a01ab25314712b65db51216abf14a103fa3fb975e82e745482c47216a0e17a",
+    "mse_s1": "bddc02a23a29e61d8d50414618e6577a74ad2315d1c92bcc26d212b6cb48f171",
+    "mse_s2": "594fda8da62c671dd6234b277f03fe29920c09bab18f28e58640dd7c943e5cc1",
+    "oracle_s0": "967120f1ffb78c9493f429ad7d945ad3e894cf281f4f0d23b8972368ac050596",
+    "oracle_s1": "e8c8919dd001e9c2c74b09e3231e0618a266c372af07f8422e49f68de54714a9",
+    "oracle_s2": "d439ad0670c860afcde5b305449e35f19204c4efe1004184b78063bab90ce4e4"
+  },
+  "wall_s": 358.3670916557312
+}

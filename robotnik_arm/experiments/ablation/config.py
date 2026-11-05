@@ -79,6 +79,9 @@ class Config:
     phi_width: int = 256
     phi_layers: int = 2
     embed_dim: int = 128
+    head: str = 'mse'            # mse | mdn
+    n_components: int = 5        # mixture components when head is mdn
+    sigma_floor: float = 0.01    # added after softplus, in normalized action units
 
     @property
     def stride(self):
@@ -117,6 +120,8 @@ class Config:
             extra += f'_{self.encoder}'
         if self.oracle:
             extra += '_oracle'
+        if self.head == 'mdn':
+            extra += f'_mdn{self.n_components}'
         return f'r{self.rate_hz}_p{self.predict_s:g}_e{self.execute_frac:g}_h{hist}_d{self.demos}{extra}'
 
     def to_dict(self):

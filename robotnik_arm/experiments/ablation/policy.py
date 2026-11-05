@@ -1,9 +1,11 @@
-"""The MLP-trunk policy with an MSE chunk head (torch, for training)."""
+"""The MLP-trunk policy with an MSE chunk head, and the mixture-density head (torch, for training)."""
 import json
+import math
 
 import numpy as np
 import torch
 from torch import nn
+from torch.nn import functional as F
 
 from ballset import BALL_FEAT_DIM, ROBOT_FEAT_DIM, ball_features, robot_features
 from config import BASELINE, Config, GRID_HZ, policy_frames  # noqa: F401
@@ -80,7 +82,19 @@ class DeepSetsPolicy(nn.Module):
             layers += [nn.Linear(size, TRUNK_WIDTH), nn.ReLU()]
             size = TRUNK_WIDTH
         self.trunk = nn.Sequential(*layers)
-        self.head = nn.Linear(TRUNK_WIDTH, cfg.horizon * act_dim)
+        if cfg.head == 'mdn':
+            if cfg.n_components < 2:
+                raise ValueError('the mixture head needs at least two components')
+            chunk = cfg.horizon * act_dim
+            k = cfg.n_components
+            self.pi_head = nn.Linear(TRUNK_WIDTH, k)
+            self.mu_head = nn.Linear(TRUNK_WIDTH, k * chunk)
+            self.sigma_head = nn.Linear(TRUNK_WIDTH, k * chunk)
+            self._init_mixture()
+        elif cfg.head == 'mse':
+            self.head = nn.Linear(TRUNK_WIDTH, cfg.horizon * act_dim)
+        else:
+            raise ValueError(f'unknown head {cfg.head}')
         self.register_buffer('ball_mean', torch.zeros(BALL_FEAT_DIM))
         self.register_buffer('ball_std', torch.ones(BALL_FEAT_DIM))
         self.register_buffer('robot_mean', torch.zeros(ROBOT_FEAT_DIM))
@@ -88,13 +102,47 @@ class DeepSetsPolicy(nn.Module):
         self.register_buffer('act_mean', torch.zeros(cfg.horizon, act_dim))
         self.register_buffer('act_std', torch.ones(cfg.horizon, act_dim))
 
-    def forward_set(self, robot, balls):
-        """robot (B, F, 33), balls (B, N, F, 22). Returns normalized (B, H, act)."""
+    def _init_mixture(self):
+        """Start from equal weights, unit normalized variance, and separated means.
+
+        Identical components get identical gradients and never split. The mean bias
+        is a different draw per component so the mixture begins multimodal.
+        """
+        width = self.pi_head.in_features
+        scale = 0.01 / math.sqrt(width)
+        nn.init.normal_(self.pi_head.weight, std=scale)
+        nn.init.zeros_(self.pi_head.bias)
+        nn.init.normal_(self.mu_head.weight, std=scale)
+        nn.init.normal_(self.mu_head.bias, std=0.5)
+        nn.init.zeros_(self.sigma_head.weight)
+        # softplus(bias) + floor = 1, in the same normalized units as the MSE target.
+        target = 1.0 - float(self.cfg.sigma_floor)
+        nn.init.constant_(self.sigma_head.bias, math.log(math.expm1(target)))
+
+    def _encode(self, robot, balls):
+        """robot (B, F, 33), balls (B, N, F, 22). Returns the trunk features (B, 512)."""
         balls = ((balls - self.ball_mean) / self.ball_std).clamp(-INPUT_CLIP, INPUT_CLIP)
         robot = ((robot - self.robot_mean) / self.robot_std).clamp(-INPUT_CLIP, INPUT_CLIP)
         emb = self.phi(balls.reshape(balls.shape[0], balls.shape[1], -1)).sum(dim=1)
         z = torch.cat((robot.reshape(robot.shape[0], -1), emb), dim=1)
-        return self.head(self.trunk(z)).view(-1, self.cfg.horizon, self.act_dim)
+        return self.trunk(z)
+
+    def forward_set(self, robot, balls):
+        """robot (B, F, 33), balls (B, N, F, 22). Returns normalized (B, H, act)."""
+        return self.head(self._encode(robot, balls)).view(-1, self.cfg.horizon, self.act_dim)
+
+    def mixture(self, robot, balls):
+        """Normalized mixture: log_pi (B, K), mu and sigma (B, K, H, act).
+
+        ``sigma`` is softplus of the raw head plus ``sigma_floor``. The floor is in
+        normalized action units, where a typical target has standard deviation 1.
+        """
+        encoded = self._encode(robot, balls)
+        log_pi = torch.log_softmax(self.pi_head(encoded), dim=-1)
+        k, horizon, act = self.cfg.n_components, self.cfg.horizon, self.act_dim
+        mu = self.mu_head(encoded).view(-1, k, horizon, act)
+        sigma = F.softplus(self.sigma_head(encoded)).view(-1, k, horizon, act) + self.cfg.sigma_floor
+        return log_pi, mu, sigma
 
     def forward(self, frames):
         """frames: (B, F, 42) raw one-ball observations, oldest first."""
@@ -103,6 +151,18 @@ class DeepSetsPolicy(nn.Module):
     @torch.no_grad()
     def predict(self, frames):
         return self(frames) * self.act_std + self.act_mean
+
+
+def gaussian_mixture_nll(log_pi, mu, sigma, target):
+    """Mean negative log-likelihood of a diagonal Gaussian mixture.
+
+    ``log_pi`` is (B, K), ``mu`` and ``sigma`` are (B, K, H, act), ``target`` is
+    (B, H, act). The sum inside each component is over the whole chunk, and the
+    components are combined with logsumexp.
+    """
+    log_prob = -0.5 * (((target[:, None] - mu) / sigma) ** 2 + 2.0 * sigma.log() + math.log(2.0 * math.pi))
+    log_prob = log_prob.sum(dim=(-1, -2))
+    return -torch.logsumexp(log_pi + log_prob, dim=-1).mean()
 
 
 def load_policy(path):

@@ -1,0 +1,69 @@
+{
+  "run_id": "20261105-124728-twoball-compare",
+  "stage": "twoball-compare",
+  "model": "mse-oracle-ceiling",
+  "note": "averaging",
+  "started": "2026-11-05T12:47:28",
+  "config": {
+    "radius_mm": 50.0,
+    "n_scenes": 200
+  },
+  "command": [
+    "eval_two_ball.py"
+  ],
+  "seeds": {
+    "scenes": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\two_ball\\test_scenes.json"
+  },
+  "git": {
+    "commit": "1783289394f8471aafd7f8191fdc4951386627f7",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/catch_env.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/run_relative.py",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? robotnik_arm/experiments/ablation/eval_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/gen_offset_matched.py",
+      "?? robotnik_arm/experiments/ablation/gen_offset_planned.py",
+      "?? robotnik_arm/experiments/ablation/gen_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/measure_park_cloud.py",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122045-twoball-data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122312-twoball-train.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_train.json",
+      "?? robotnik_arm/experiments/ablation/train_offset_variety.py",
+      "?? robotnik_arm/experiments/ablation/train_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/variety_data.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T12:47:30",
+  "metrics": {
+    "miss_mm": 813.6604835956067,
+    "catch_rate": 0.025000000000000005
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\two_ball_compare.json",
+      "bytes": 504870,
+      "sha256": "c0666e047b3760530f26bd6b7655d0bc22bf2c35bd3b50773896afe87f8d049f"
+    }
+  ]
+}

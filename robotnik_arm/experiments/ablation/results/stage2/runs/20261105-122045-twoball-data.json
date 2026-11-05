@@ -1,0 +1,74 @@
+{
+  "run_id": "20261105-122045-twoball-data",
+  "stage": "twoball-data",
+  "model": "random-choice-expert",
+  "note": "200 mm separation, half-and-half one-ball recipe",
+  "started": "2026-11-05T12:20:45",
+  "config": {
+    "master": 2026,
+    "scene_stream": 70,
+    "noise_stream": 71,
+    "offset_stream": 72,
+    "test_stream": 80,
+    "oracle_stream": 81,
+    "n": 2000,
+    "n_test": 200,
+    "n_clean": 1000,
+    "separation_m": 0.2,
+    "side_sigma_m": 0.05,
+    "along_sigma_m": 0.02,
+    "cap_m": 0.15,
+    "dart": "odd indices of the first half",
+    "labels": "expert command sent to the low level; DART is torque noise and is not the label"
+  },
+  "command": [
+    "gen_two_ball.py"
+  ],
+  "seeds": {
+    "train_stream": 70,
+    "test_stream": 80,
+    "n": 2000,
+    "n_test": 200
+  },
+  "git": {
+    "commit": "1783289394f8471aafd7f8191fdc4951386627f7",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/catch_env.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? robotnik_arm/experiments/ablation/eval_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/gen_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/train_two_ball.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T12:20:45",
+  "metrics": {
+    "miss_mm": 0.38400587998975244,
+    "catch_rate": 1.0
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\grid50_two_ball.npz",
+      "bytes": 700554005,
+      "sha256": "0232be14cbcc2db65937d1b6d00c70ed4a6556261afbd1cc8bbe75ad2a121854"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\two_ball\\test_scenes.json",
+      "bytes": 63140,
+      "sha256": "6212b519a093618386336e7e5d33d8f98213e353f2873f7bbf75f624dc02b84a"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\two_ball_data.json",
+      "bytes": 1365,
+      "sha256": "a66186f8a717de465ef32f6d6ef6a340c3ee93728014b0b3ddfb675a7ddd8130"
+    }
+  ]
+}

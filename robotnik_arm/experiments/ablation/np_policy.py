@@ -25,7 +25,15 @@ class NumpyPolicy:
         self.act_mean, self.act_std = w['act_mean'], w['act_std']
         idx = sorted({int(k.split('__')[1]) for k in w if k.startswith('trunk__') and k.endswith('__weight')})
         self.trunk = [(w[f'trunk__{i}__weight'].T.copy(), w[f'trunk__{i}__bias']) for i in idx]
-        self.head = (w['head__weight'].T.copy(), w['head__bias'])
+        self.head = None
+        self.mixture = None
+        if self.cfg.head == 'mdn':
+            self.mixture = dict(
+                pi=(w['pi_head__weight'].T.copy(), w['pi_head__bias']),
+                mu=(w['mu_head__weight'].T.copy(), w['mu_head__bias']),
+                sigma=(w['sigma_head__weight'].T.copy(), w['sigma_head__bias']))
+        else:
+            self.head = (w['head__weight'].T.copy(), w['head__bias'])
         self.phi = None
         if self.cfg.encoder == 'deepsets':
             self.ball_mean, self.ball_std = w['ball_mean'], w['ball_std']
@@ -46,6 +54,43 @@ class NumpyPolicy:
                 x = np.maximum(x, 0.0)
         return x
 
+    def _mixture_from_embedding(self, z):
+        """Trunk features to ``(pi, mu_norm)``. ``mu_norm`` is (K, H, act) in normalized units."""
+        k = self.cfg.n_components
+        horizon = self.cfg.horizon
+        act = self.act_std.shape[-1]
+        pi_w, pi_b = self.mixture['pi']
+        logits = z @ pi_w + pi_b
+        logits = logits - logits.max()
+        pi = np.exp(logits)
+        pi = pi / pi.sum()
+        mu_w, mu_b = self.mixture['mu']
+        mu = (z @ mu_w + mu_b).reshape(k, horizon, act)
+        return pi.astype(np.float32), mu.astype(np.float32)
+
+    def _encode_set(self, frames, oracle_slot):
+        """frames (N, F, 42) to trunk features."""
+        balls = ball_features(frames)
+        if self.cfg.oracle:
+            balls = np.array(balls, copy=True)
+            balls[..., 21] = 0.0
+            if oracle_slot is not None:
+                balls[int(oracle_slot), :, 21] = 1.0
+        balls = np.clip((balls - self.ball_mean) / self.ball_std, -INPUT_CLIP, INPUT_CLIP)
+        robot = robot_features(frames[0])
+        robot = np.clip((robot - self.robot_mean) / self.robot_std, -INPUT_CLIP, INPUT_CLIP)
+        emb = np.zeros(self.cfg.embed_dim, dtype=np.float32)
+        for ball in balls:
+            emb = emb + self._mlp(ball.reshape(1, -1), self.phi, relu_last=False)[0]
+        z = np.concatenate((robot.reshape(-1), emb))
+        return self._mlp(z, self.trunk, relu_last=True)
+
+    def mdn_components(self, frames, oracle_slot=None):
+        """frames (N, F, 42). Returns ``pi`` (K,) and normalized means (K, H, act)."""
+        if self.mixture is None:
+            raise RuntimeError('mdn_components is the mixture head')
+        return self._mixture_from_embedding(self._encode_set(frames, oracle_slot))
+
     def _predict_deepsets(self, frames):
         """frames: (F, 42) one-ball observations, oldest first."""
         ball = ball_features(frames)
@@ -53,6 +98,33 @@ class NumpyPolicy:
         ball = np.clip((ball - self.ball_mean) / self.ball_std, -INPUT_CLIP, INPUT_CLIP)
         robot = np.clip((robot - self.robot_mean) / self.robot_std, -INPUT_CLIP, INPUT_CLIP)
         emb = self._mlp(ball.reshape(1, -1), self.phi, relu_last=False)[0]
+        z = np.concatenate((robot.reshape(-1), emb))
+        z = self._mlp(z, self.trunk, relu_last=True)
+        out = (z @ self.head[0] + self.head[1]).reshape(self.cfg.horizon, -1)
+        return out * self.act_std + self.act_mean
+
+    def predict_set(self, frames, oracle_slot=None):
+        """frames: (N, F, 42) raw per-ball observations, oldest frame first.
+
+        Returns (H, act_dim). Sums one embedding per ball. When the checkpoint was
+        trained with the oracle flag, ``oracle_slot`` is the ball whose flag is 1.
+        """
+        if self.phi is None:
+            raise RuntimeError('predict_set is the DeepSets path')
+        if self.mixture is not None:
+            raise RuntimeError('a mixture checkpoint selects a component in MDNDriver')
+        balls = ball_features(frames)
+        if self.cfg.oracle:
+            balls = np.array(balls, copy=True)
+            balls[..., 21] = 0.0
+            if oracle_slot is not None:
+                balls[int(oracle_slot), :, 21] = 1.0
+        balls = np.clip((balls - self.ball_mean) / self.ball_std, -INPUT_CLIP, INPUT_CLIP)
+        robot = robot_features(frames[0])
+        robot = np.clip((robot - self.robot_mean) / self.robot_std, -INPUT_CLIP, INPUT_CLIP)
+        emb = np.zeros(self.cfg.embed_dim, dtype=np.float32)
+        for ball in balls:
+            emb = emb + self._mlp(ball.reshape(1, -1), self.phi, relu_last=False)[0]
         z = np.concatenate((robot.reshape(-1), emb))
         z = self._mlp(z, self.trunk, relu_last=True)
         out = (z @ self.head[0] + self.head[1]).reshape(self.cfg.horizon, -1)
@@ -117,6 +189,97 @@ class PolicyDriver:
             hist = self.frames[-n:]
             hist = [hist[0]] * (n - len(hist)) + hist
             self.chunk = self.model.predict(np.stack(hist)).astype(np.float64)
+            self.q_ref = env.q[4:11].copy()
+            self.index = 0
+        c = self.chunk[self.index]
+        self.index += 1
+        if len(self.frames) > 64:
+            del self.frames[:-cfg.frames]
+        return np.concatenate((c[:4], self.q_ref + c[4:11], c[11:18])), True
+
+
+class SetPolicyDriver:
+    """PolicyDriver for a DeepSets checkpoint. Each stored frame is ``(N, 42)``.
+
+    ``oracle_slot`` is ignored unless the checkpoint was trained with the oracle flag.
+    History padding matches PolicyDriver: the first frame is repeated until the stack is full.
+    """
+
+    def __init__(self, model, oracle_slot=None):
+        self.model, self.cfg, self.oracle_slot = model, model.cfg, oracle_slot
+
+    def reset(self, env):
+        self.frames, self.chunk, self.index, self.q_ref = [], None, 0, None
+
+    def act(self, env, t, dt_ctrl):
+        self.frames.append(env.obs_set(t))
+        cfg = self.cfg
+        if self.chunk is None or self.index >= cfg.execute:
+            n = cfg.frames
+            hist = self.frames[-n:]
+            hist = [hist[0]] * (n - len(hist)) + hist
+            stacked = np.stack(hist, axis=1)
+            slot = self.oracle_slot if cfg.oracle else None
+            self.chunk = self.model.predict_set(stacked, slot).astype(np.float64)
+            self.q_ref = env.q[4:11].copy()
+            self.index = 0
+        c = self.chunk[self.index]
+        self.index += 1
+        if len(self.frames) > 64:
+            del self.frames[:-cfg.frames]
+        return np.concatenate((c[:4], self.q_ref + c[4:11], c[11:18])), True
+
+
+def choose_component(pi, mu_norm, rule, previous, execute):
+    """Pick one component. ``previous`` is the normalized chunk still being executed.
+
+    ``weight`` takes the highest mixture weight. ``continue`` takes the component
+    whose upcoming steps best match the unexecuted part of the chunk in progress,
+    compared in normalized action units. The first query of an episode has no
+    previous chunk, so both rules take the highest weight. Component indices are
+    not kept: the same index need not mean the same ball at the next replan.
+    """
+    if rule == 'weight' or previous is None:
+        return int(np.argmax(pi))
+    if rule != 'continue':
+        raise ValueError(f'unknown mixture rule {rule}')
+    remain = previous[execute:]
+    prefix = mu_norm[:, :len(remain)]
+    dist = ((prefix - remain) ** 2).mean(axis=(1, 2))
+    order = np.lexsort((-pi, dist))
+    return int(order[0])
+
+
+class MDNDriver:
+    """Executes one mixture component for the same 1 s as the squared-error driver.
+
+    Replans when that second is used up. No average across components, and no
+    carry of a component index from one replan to the next.
+    """
+
+    def __init__(self, model, rule='weight', oracle_slot=None):
+        self.model, self.cfg, self.rule, self.oracle_slot = model, model.cfg, rule, oracle_slot
+
+    def reset(self, env):
+        self.frames, self.chunk, self.prev_norm = [], None, None
+        self.index, self.q_ref = 0, None
+        self.choices, self.max_pi = [], []
+
+    def act(self, env, t, dt_ctrl):
+        self.frames.append(env.obs_set(t))
+        cfg = self.cfg
+        if self.chunk is None or self.index >= cfg.execute:
+            n = cfg.frames
+            hist = self.frames[-n:]
+            hist = [hist[0]] * (n - len(hist)) + hist
+            stacked = np.stack(hist, axis=1)
+            slot = self.oracle_slot if cfg.oracle else None
+            pi, mu_norm = self.model.mdn_components(stacked, slot)
+            k = choose_component(pi, mu_norm, self.rule, self.prev_norm, cfg.execute)
+            self.choices.append(int(k))
+            self.max_pi.append(float(pi.max()))
+            self.prev_norm = mu_norm[k]
+            self.chunk = (mu_norm[k] * self.model.act_std + self.model.act_mean).astype(np.float64)
             self.q_ref = env.q[4:11].copy()
             self.index = 0
         c = self.chunk[self.index]

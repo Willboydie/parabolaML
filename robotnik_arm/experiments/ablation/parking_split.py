@@ -44,6 +44,7 @@ def miss_components(policy_rows, experts):
         up_m.append(float(miss[2] * 1000))
         miss3.append(float(np.linalg.norm(miss) * 1000))
     base_n = np.asarray(base_n)
+    along_b, cross_b = np.asarray(along_b), np.asarray(cross_b)
     along_m, cross_m, up_m = np.asarray(along_m), np.asarray(cross_m), np.asarray(up_m)
     energy = along_m ** 2 + cross_m ** 2 + up_m ** 2
     total = float(np.mean(energy))
@@ -52,8 +53,12 @@ def miss_components(policy_rows, experts):
         n=int(len(base_n)),
         base_offset_median_mm=float(np.median(base_n)),
         base_offset_p90_mm=float(np.percentile(base_n, 90)),
+        base_along_median_mm=float(np.median(along_b)),
+        base_along_mean_mm=float(np.mean(along_b)),
         base_along_abs_median_mm=float(np.median(np.abs(along_b))),
         base_cross_abs_median_mm=float(np.median(np.abs(cross_b))),
+        frac_ahead=float(np.mean(along_b > 0)),
+        miss_along_median_mm=float(np.median(along_m)),
         miss_along_abs_median_mm=float(np.median(np.abs(along_m))),
         miss_cross_abs_median_mm=float(np.median(np.abs(cross_m))),
         miss_up_abs_median_mm=float(np.median(up_abs)),
@@ -80,6 +85,8 @@ def load_experts(seeds):
 def eval_weights(weights, seeds, experts):
     rows = pool_map(policy_episode, [(int(s),) for s in seeds], init_model, (str(weights),), Path(weights).stem)
     stats = summarize_miss(rows)
+    dists = [r['miss_mm'] for r in rows if r['miss_mm'] is not None]
+    stats['catch_rate_50mm'] = float(np.mean([d < 50.0 for d in dists])) if dists else None
     stats['compensation'] = compensation(rows, experts)
     stats['split'] = miss_components(rows, experts)
     return stats
@@ -99,7 +106,10 @@ def aggregate(blocks):
         ('miss_mm', ['miss_mm']),
         ('median_miss_mm', ['median_miss_mm']),
         ('catch_rate', ['catch_rate']),
+        ('catch_rate_50mm', ['catch_rate_50mm']),
         ('base_offset_median_mm', ['split', 'base_offset_median_mm']),
+        ('base_along_median_mm', ['split', 'base_along_median_mm']),
+        ('frac_ahead', ['split', 'frac_ahead']),
         ('miss_along_abs_median_mm', ['split', 'miss_along_abs_median_mm']),
         ('miss_cross_abs_median_mm', ['split', 'miss_cross_abs_median_mm']),
         ('miss_up_abs_median_mm', ['split', 'miss_up_abs_median_mm']),
@@ -129,12 +139,14 @@ def main():
         stats = eval_weights(path, test, experts)
         report[name] = stats
         split = stats['split']
-        print(f"{name}: catch {stats['catch_rate']:.3f}  miss {stats['miss_mm']:.1f} mm  "
+        print(f"{name}: catch {stats['catch_rate']:.3f}  50mm {stats['catch_rate_50mm']:.3f}  "
+              f"miss {stats['miss_mm']:.1f} mm  "
               f"base {split['base_offset_median_mm']:.0f} mm  "
-              f"along {split['miss_along_abs_median_mm']:.0f}  "
+              f"along {split['base_along_median_mm']:+.1f}  "
+              f"ahead {split['frac_ahead']:.2f}  "
+              f"miss along {split['miss_along_abs_median_mm']:.0f}  "
               f"cross {split['miss_cross_abs_median_mm']:.0f}  "
-              f"up {split['miss_up_abs_median_mm']:.0f}  "
-              f"up>=10mm {split['frac_up_at_least_10mm']:.2f}", flush=True)
+              f"up {split['miss_up_abs_median_mm']:.0f}", flush=True)
     report['d2000'] = aggregate([report[f'd2000_s{i}'] for i in range(3)])
     out = RESULTS / 'parking_split.json'
     out.write_text(json.dumps(report, indent=2))

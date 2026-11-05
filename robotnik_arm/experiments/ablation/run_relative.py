@@ -170,7 +170,7 @@ def policy_episode(seed):
             env.min_dist = min(env.min_dist, dist)
             if best is None or dist < best['dist']:
                 best = dict(dist=float(dist), step=step, base=env.base_pos[:2].copy(),
-                            ee=env.ee.copy(), ball=env.ball(t).copy())
+                            ee=env.ee.copy(), ball=env.ball(t).copy(), bearing=float(env.bearing))
             if catch_time is None and dist < 0.01:
                 catch_time = t
         if (catch_time is not None and t >= catch_time + CATCH_LINGER) or t >= end_time:
@@ -254,9 +254,9 @@ def summarize_miss(rows):
                 miss_mm=float(np.mean(dists)), median_miss_mm=float(np.median(dists)))
 
 
-def pool_map(fn, jobs, initializer, initargs=(), label=''):
+def pool_map(fn, jobs, initializer, initargs=(), label='', workers=16):
     out = []
-    with ProcessPoolExecutor(16, initializer=initializer, initargs=initargs) as pool:
+    with ProcessPoolExecutor(workers, initializer=initializer, initargs=initargs) as pool:
         futs = [pool.submit(fn, *job) for job in jobs]
         for n, fut in enumerate(as_completed(futs), 1):
             out.append(fut.result())

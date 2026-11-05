@@ -1,0 +1,119 @@
+{
+  "run_id": "20261105-122312-twoball-train",
+  "stage": "twoball-train",
+  "model": "mse-and-oracle",
+  "note": "two-ball data only, 3 seeds, no one-ball rows",
+  "started": "2026-11-05T12:23:12",
+  "config": {
+    "mse": {
+      "rate_hz": 25,
+      "predict_s": 2.0,
+      "execute_frac": 0.5,
+      "history": "stack",
+      "history_s": 0.5,
+      "demos": 2000,
+      "drop_time": false,
+      "features": "world",
+      "encoder": "deepsets",
+      "pool": "sum",
+      "oracle": false,
+      "phi_width": 256,
+      "phi_layers": 2,
+      "embed_dim": 128
+    },
+    "oracle": {
+      "rate_hz": 25,
+      "predict_s": 2.0,
+      "execute_frac": 0.5,
+      "history": "stack",
+      "history_s": 0.5,
+      "demos": 2000,
+      "drop_time": false,
+      "features": "world",
+      "encoder": "deepsets",
+      "pool": "sum",
+      "oracle": true,
+      "phi_width": 256,
+      "phi_layers": 2,
+      "embed_dim": 128
+    }
+  },
+  "command": [
+    "train_two_ball.py"
+  ],
+  "seeds": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "data": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\grid50_two_ball.npz"
+  },
+  "git": {
+    "commit": "1783289394f8471aafd7f8191fdc4951386627f7",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/catch_env.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? robotnik_arm/experiments/ablation/eval_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/gen_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122045-twoball-data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_data.json",
+      "?? robotnik_arm/experiments/ablation/train_two_ball.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T12:29:11",
+  "metrics": {
+    "miss_mm": null,
+    "catch_rate": null
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\two_ball_train.json",
+      "bytes": 677,
+      "sha256": "a28aa8b9ac1518bd698dc569efa67aa23a2c17966e691e14c4779e50f8b9417a"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\twoball_mse_s0.pt",
+      "bytes": 5807645,
+      "sha256": "50d4561164cb998fe5dc98f98817e74c888298d955eb9aaac51a7a236713a7a1"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\twoball_mse_s1.pt",
+      "bytes": 5807645,
+      "sha256": "37582e19eb2d2f9df9534c14b12100964df943a4a2b87884e74133dbd4467b6f"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\twoball_mse_s2.pt",
+      "bytes": 5807645,
+      "sha256": "eb1dc5e73956c19fe003a11b370647d2090d7f5a55a396187718c92806e6e550"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\twoball_oracle_s0.pt",
+      "bytes": 5807723,
+      "sha256": "c284a4769c91b8c6a2be8f050ab9e23f49518dc1338fd7ed1ef98fb413715ace"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\twoball_oracle_s1.pt",
+      "bytes": 5807723,
+      "sha256": "0cb056a217d7b84ea71cb86696c5d3970e9d28ca318fd05f3af2bc7f0c66d50e"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\twoball_oracle_s2.pt",
+      "bytes": 5807723,
+      "sha256": "30318789892eabf2c9f109afee2d31d7116dec01e600a420657910d882921b3d"
+    }
+  ]
+}

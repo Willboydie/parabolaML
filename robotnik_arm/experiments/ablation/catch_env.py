@@ -109,9 +109,23 @@ class CatchEnv:
         targets, _selected, _plans = make_catchable_pair(
             seed, None, self.lower, self.upper, self.init_base_pos, self.init_bearing, self.init_ee,
             self.dt, self.base_params, self.arm_params, target_count=1)
-        self.target = targets[0]
+        self.targets = list(targets)
+        self.chosen_ball = 0
+        self.target = self.targets[0]
         self.has_left = False
         self.min_dist = np.inf
+        self.slot_left = [False]
+
+    def set_scene(self, targets, chosen=0):
+        """Restore the robot and install a specific ball list. ``chosen`` is the expert's ball."""
+        self.client.restoreState(self.saved_state)
+        self._read_state()
+        self.targets = list(targets)
+        self.chosen_ball = int(chosen)
+        self.target = self.targets[self.chosen_ball]
+        self.has_left = False
+        self.min_dist = np.inf
+        self.slot_left = [False] * len(self.targets)
 
     def _read_state(self):
         c, rid = self.client, self.rid
@@ -155,6 +169,32 @@ class CatchEnv:
         pos, vel, acc = self.ball_estimate(t)
         return np.concatenate(([t], pos, vel, acc, self.base_pos, [np.sin(self.bearing), np.cos(self.bearing)],
                                self.base_vel, self.q[4:11], self.qd[4:11], self.qd[:4], self.ee)).astype(np.float32)
+
+    def ball_estimate_of(self, target, t):
+        """Same three-sample estimate as ``ball_estimate``, for one specific ball."""
+        p0, p1, p2 = (target.position(max(0.0, t - k * self.dt)) for k in (2, 1, 0))
+        v0, v1 = (p1 - p0) / self.dt, (p2 - p1) / self.dt
+        acc = (v1 - v0) / self.dt
+        return p2, v1 + 0.5 * acc * self.dt, acc
+
+    def obs_of(self, target, t):
+        """One 42-D observation whose ball columns belong to ``target``. The robot columns are shared."""
+        pos, vel, acc = self.ball_estimate_of(target, t)
+        return np.concatenate(([t], pos, vel, acc, self.base_pos, [np.sin(self.bearing), np.cos(self.bearing)],
+                               self.base_vel, self.q[4:11], self.qd[4:11], self.qd[:4], self.ee)).astype(np.float32)
+
+    def obs_set(self, t):
+        """``(n_balls, 42)`` observations, slot 0 first. Robot columns match across slots."""
+        return np.stack([self.obs_of(target, t) for target in self.targets], axis=0)
+
+    def slot_distance(self, slot, t):
+        """Capture-window distance for one ball, using that ball's own leave-and-reenter flag."""
+        ball = self.targets[slot].position(t)
+        outside = bool(np.any(ball < self.lower - 1e-6) or np.any(ball > self.upper + 1e-6))
+        self.slot_left[slot] = self.slot_left[slot] or outside
+        if not self.slot_left[slot] or outside:
+            return None
+        return float(np.linalg.norm(ball - self.ee))
 
     def arm_torque(self, q_des, qd_des):
         p = self.arm_params

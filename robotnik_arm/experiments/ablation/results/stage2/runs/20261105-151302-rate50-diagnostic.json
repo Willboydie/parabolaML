@@ -1,0 +1,137 @@
+{
+  "run_id": "20261105-151302-rate50-diagnostic",
+  "stage": "rate50-diagnostic",
+  "model": "r50_p1_e0.5_hstack0.24s_d2000_deepsets",
+  "note": "signed parking on DeepSets ceiling, then 50 Hz 1s/0.5s if still ahead",
+  "started": "2026-11-05T15:13:02",
+  "config": {
+    "primary": {
+      "rate_hz": 50,
+      "predict_s": 1.0,
+      "execute_frac": 0.5,
+      "history": "stack",
+      "history_s": 0.24,
+      "demos": 2000,
+      "drop_time": false,
+      "features": "world",
+      "encoder": "deepsets",
+      "pool": "sum",
+      "oracle": false,
+      "phi_width": 256,
+      "phi_layers": 2,
+      "embed_dim": 128,
+      "head": "mse",
+      "n_components": 5,
+      "sigma_floor": 0.01
+    },
+    "control": {
+      "rate_hz": 25,
+      "predict_s": 2.0,
+      "execute_frac": 0.25,
+      "history": "stack",
+      "history_s": 0.5,
+      "demos": 2000,
+      "drop_time": false,
+      "features": "world",
+      "encoder": "deepsets",
+      "pool": "sum",
+      "oracle": false,
+      "phi_width": 256,
+      "phi_layers": 2,
+      "embed_dim": 128,
+      "head": "mse",
+      "n_components": 5,
+      "sigma_floor": 0.01
+    }
+  },
+  "command": [
+    "c:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\rate50_diagnostic.py"
+  ],
+  "seeds": {
+    "test": 200,
+    "train_seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "git": {
+    "commit": "1783289394f8471aafd7f8191fdc4951386627f7",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/catch_env.py",
+      " M robotnik_arm/experiments/ablation/config.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/parking_split.py",
+      " M robotnik_arm/experiments/ablation/policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/run_relative.py",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? robotnik_arm/experiments/ablation/eval_mdn.py",
+      "?? robotnik_arm/experiments/ablation/eval_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/gen_offset_matched.py",
+      "?? robotnik_arm/experiments/ablation/gen_offset_planned.py",
+      "?? robotnik_arm/experiments/ablation/gen_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/measure_park_cloud.py",
+      "?? robotnik_arm/experiments/ablation/rate50_diagnostic.py",
+      "?? robotnik_arm/experiments/ablation/results/learner_park_cloud.npz",
+      "?? robotnik_arm/experiments/ablation/results/learner_park_offsets.json",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_matched_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_matched_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_matched_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_planned_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_planned_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_planned_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mdn_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mdn_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mdn_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/stage2/mdn_compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122045-twoball-data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122312-twoball-train.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-124728-twoball-compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-131038-twoball-mdn.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-145900-mdn-compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_mdn_train.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_train.json",
+      "?? robotnik_arm/experiments/ablation/train_mdn.py",
+      "?? robotnik_arm/experiments/ablation/train_offset_variety.py",
+      "?? robotnik_arm/experiments/ablation/train_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/variety_data.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T15:29:24",
+  "metrics": {
+    "miss_mm": 24.742102308587295,
+    "catch_rate": 0.94
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\rate50_diagnostic.json",
+      "bytes": 8864,
+      "sha256": "81aedb219c5ba37afb12f34a2aeba12c3743ce6b4d572d8e13f36cb16e661512"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\r50_p1_e0.5_hstack0.24s_d2000_deepsets_s0.pt",
+      "bytes": 5808539,
+      "sha256": "3ade6e7e78bad4550533336d2dcd37afe026c53ab358546d101806e22dd91eab"
+    }
+  ]
+}

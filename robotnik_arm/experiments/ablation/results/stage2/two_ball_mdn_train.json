@@ -1,0 +1,87 @@
+{
+  "data": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\data\\grid50_two_ball.npz",
+  "config": {
+    "rate_hz": 25,
+    "predict_s": 2.0,
+    "execute_frac": 0.5,
+    "history": "stack",
+    "history_s": 0.5,
+    "demos": 2000,
+    "drop_time": false,
+    "features": "world",
+    "encoder": "deepsets",
+    "pool": "sum",
+    "oracle": false,
+    "phi_width": 256,
+    "phi_layers": 2,
+    "embed_dim": 128,
+    "head": "mdn",
+    "n_components": 5,
+    "sigma_floor": 0.01
+  },
+  "hashes": {
+    "s0": "fcc26a42bba2b9fb7e7ff29a133709fe046e94a7e424adc4af81c947cfd5fdbb",
+    "s1": "8d87b5492b9a442793941662c884078ef49beaf4219b5671f93856c9ecd9542e",
+    "s2": "27a8e98c9d6caff74cb4d22a48cd1c07532e0c5eb2adeff0f4ff07f66b4ce57d"
+  },
+  "last_diagnostic": {
+    "s0": {
+      "step": 19999,
+      "loss": -2783.851318359375,
+      "grad_norm": 1831.69775390625,
+      "weight_norm": 223.8502197265625,
+      "grad_norm_preclip": 1831.6978759765625,
+      "lr": 1e-05,
+      "probe_loss": -2790.5810546875,
+      "max_pi": 0.9297130107879639,
+      "pi_entropy": 0.15767204761505127,
+      "component_frac": [
+        0.339599609375,
+        0.0,
+        0.49365234375,
+        0.1142578125,
+        0.052490234375
+      ],
+      "mode_mse": 0.012635970488190651
+    },
+    "s1": {
+      "step": 19999,
+      "loss": -2758.530029296875,
+      "grad_norm": 2061.1484375,
+      "weight_norm": 208.43165588378906,
+      "grad_norm_preclip": 2061.148681640625,
+      "lr": 1e-05,
+      "probe_loss": -2780.08740234375,
+      "max_pi": 0.9186294078826904,
+      "pi_entropy": 0.1652122139930725,
+      "component_frac": [
+        0.377197265625,
+        0.142822265625,
+        0.06591796875,
+        0.4140625,
+        0.0
+      ],
+      "mode_mse": 0.012691508047282696
+    },
+    "s2": {
+      "step": 19999,
+      "loss": -2754.7998046875,
+      "grad_norm": 1696.4857177734375,
+      "weight_norm": 203.14706420898438,
+      "grad_norm_preclip": 1696.48583984375,
+      "lr": 1e-05,
+      "probe_loss": -2785.521484375,
+      "max_pi": 0.9687850475311279,
+      "pi_entropy": 0.0950971469283104,
+      "component_frac": [
+        0.083251953125,
+        0.051513671875,
+        0.48779296875,
+        0.004150390625,
+        0.373291015625
+      ],
+      "mode_mse": 0.010899859480559826
+    }
+  },
+  "wall_s": 784.7122972011566
+}

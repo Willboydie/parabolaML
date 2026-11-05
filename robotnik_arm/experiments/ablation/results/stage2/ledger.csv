@@ -1,2 +1,8 @@
 run_id,stage,model,miss_mm,catch_rate,record
 20261105-013349-oneball-deepsets,oneball-deepsets,r25_p2_e0.5_hstack0.5s_d2000_deepsets,36.06269104689875,0.06,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-013349-oneball-deepsets.json
+20261105-122045-twoball-data,twoball-data,random-choice-expert,0.38400587998975244,1.0,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-122045-twoball-data.json
+20261105-122312-twoball-train,twoball-train,mse-and-oracle,,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-122312-twoball-train.json
+20261105-124728-twoball-compare,twoball-compare,mse-oracle-ceiling,813.6604835956067,0.025000000000000005,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-124728-twoball-compare.json
+20261105-131038-twoball-mdn,twoball-mdn,mdn,,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-131038-twoball-mdn.json
+20261105-145900-mdn-compare,mdn-compare,mdn,1705.9934790860004,0.0016666666666666668,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-145900-mdn-compare.json
+20261105-151302-rate50-diagnostic,rate50-diagnostic,r50_p1_e0.5_hstack0.24s_d2000_deepsets,24.742102308587295,0.94,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-151302-rate50-diagnostic.json

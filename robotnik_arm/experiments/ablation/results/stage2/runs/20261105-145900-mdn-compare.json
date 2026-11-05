@@ -1,0 +1,89 @@
+{
+  "run_id": "20261105-145900-mdn-compare",
+  "stage": "mdn-compare",
+  "model": "mdn",
+  "note": "weight and continue rules",
+  "started": "2026-11-05T14:59:00",
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "command": [
+    "eval_mdn.py"
+  ],
+  "seeds": {
+    "oneball": 200,
+    "twoball": 200
+  },
+  "git": {
+    "commit": "1783289394f8471aafd7f8191fdc4951386627f7",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/catch_env.py",
+      " M robotnik_arm/experiments/ablation/config.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/run_relative.py",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? robotnik_arm/experiments/ablation/eval_mdn.py",
+      "?? robotnik_arm/experiments/ablation/eval_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/gen_offset_matched.py",
+      "?? robotnik_arm/experiments/ablation/gen_offset_planned.py",
+      "?? robotnik_arm/experiments/ablation/gen_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/measure_park_cloud.py",
+      "?? robotnik_arm/experiments/ablation/results/learner_park_cloud.npz",
+      "?? robotnik_arm/experiments/ablation/results/learner_park_offsets.json",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_matched_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_matched_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r25_p2_e0.5_hstack0.5s_d2000_deepsets_matched_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mdn_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mdn_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mdn_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_mse_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s0.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/twoball_oracle_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/stage2/mdn_compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122045-twoball-data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-122312-twoball-train.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-124728-twoball-compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-131038-twoball-mdn.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_compare.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_data.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_mdn_train.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/two_ball_train.json",
+      "?? robotnik_arm/experiments/ablation/train_mdn.py",
+      "?? robotnik_arm/experiments/ablation/train_offset_variety.py",
+      "?? robotnik_arm/experiments/ablation/train_two_ball.py",
+      "?? robotnik_arm/experiments/ablation/variety_data.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T14:59:03",
+  "metrics": {
+    "miss_mm": 1705.9934790860004,
+    "catch_rate": 0.0016666666666666668
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\mdn_compare.json",
+      "bytes": 1173711,
+      "sha256": "2a673a032a09b5d56638da94ab0acc728071f633bca1128abec2614a38cec70d"
+    }
+  ]
+}
