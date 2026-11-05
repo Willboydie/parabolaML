@@ -10,6 +10,8 @@ The main Stage 2 runs are done, with one clear result and one failure.
 
 **The mixture density network (MDN), the proposed fix, does not catch at all.** It manages 0.5–1.0% on two balls, and only 0.2% on one ball, where there is nothing to choose between. So its failure is not about choosing a ball; something in the MDN itself breaks once it drives the robot. It fits its training data well, so the next job is a short set of diagnostic tests to find where it breaks.
 
+The scripts, checkpoints, and result files behind the numbers below are listed in [Files](#files).
+
 ## The big picture
 
 The project tests one known weakness of learning by copying. Show a robot two balls, and an expert that catches either one at random. A standard copier trained by squared error learns the average of what the expert did. The average of "go left" and "go right" is "go to the middle", which catches nothing.
@@ -56,7 +58,7 @@ One episode, with times relative to the expert's stop:
 | +0.2 s (chunk step 23) | 0.041 m/s | 0 | +14 mm |
 | +0.4 s (new chunk) | 0.002 m/s | 0 | +18 mm |
 
-The robot never reverses because the expert never does. Across 200 training demos (84,832 policy ticks), the expert's net forward command is never negative; the minimum is exactly 0. Wheels spin backward during turns, but the base never drives backward. That is how the controller is written: forward speed is multiplied by max(0, cos(heading error)), and once the base has passed the goal it turns in place instead of reversing.
+The robot never reverses because the expert never does. Across 200 training demos (84,832 policy ticks), the expert's net forward command is never negative; the minimum is exactly 0. Wheels spin backward during turns, but the base never drives backward. That is how the controller is written: forward speed is multiplied by max(0, cos(heading error)), and once the base has passed the goal it turns in place instead of reversing. The rule is `base_controller` in `robotnik_arm/robotnik_arm_control.py`.
 
 *Plain version:* the robot brakes a fraction late. Because it only re-checks once a second, it rolls past the stopping point, and nothing in its examples ever shows it backing up. So an overshoot is permanent; an undershoot gets fixed by driving on.
 
@@ -174,7 +176,7 @@ What is known so far:
 - **The selection rule doesn't matter.** The two rules give the same catch outcome on 99% of scenes, and all three seeds are at or below 1.5%.
 - **In the loop, it is confident but unsteady.** The top weight is about 0.95, four of the five components get used, and the chosen component changes about three times per episode.
 
-A one-ball miss of 1.6–1.7 m means the robot barely gets to the ball. *Plain version:* the MDN learned the examples, but when it drives the robot itself, something goes wrong long before the catch. Because it fails with one ball, the cause isn't the choice between balls (full record: `mdn_compare.json`).
+A one-ball miss of 1.6–1.7 m means the robot barely gets to the ball. *Plain version:* the MDN learned the examples, but when it drives the robot itself, something goes wrong long before the catch. Because it fails with one ball, the cause isn't the choice between balls. Full record: `robotnik_arm/experiments/ablation/results/stage2/mdn_compare.json`, written by `eval_mdn.py`.
 
 ## The 50 mm decision
 
@@ -185,7 +187,7 @@ It changes two things:
 - **Balls must now land at least 200 mm apart** (4 × 50 mm), up from 180 mm. If the balls land close together, a robot that aims at the midpoint can still get within 50 mm of one ball. That would hide the very failure Stage 2 is looking for.
 - **The expert check still holds.** The expert caught everything at 45 mm, and a 50 mm target is easier, so it passes at 50 mm too.
 
-The plan file (stage2\_plan.txt) still says "smallest radius over 80%". It should be updated to record 50 mm and the 200 mm separation.
+`stage2_plan.txt` is not in the repo. The "smallest radius over 80%" rule is the docstring of `radius_curve.py`, and the decision table is `_reading` in `eval_two_ball.py`. Both still describe that rule. The 50 mm choice is the hardcoded `RADIUS_MM = 50.0` in `eval_two_ball.py` and `eval_mdn.py`. Those three places should be updated to record 50 mm and the 200 mm separation.
 
 ## What comes next
 
@@ -222,6 +224,89 @@ The report is due on 06/11. If there's no time for a fix, the MDN result stands 
 - **Identical seeds.** The squared-error robot catches exactly 5 of 200 on all three seeds. Check whether these are the same 5 scenes, and that the three checkpoints are genuinely different files (step 0e). Five common scenes are worth describing in the report; identical checkpoints would mean the seeds weren't independent.
 - **Step 0a, answered.** Larger forward/back offsets were tested, matched to the learner's own parking, and made things worse (see How Stage 1 ended).
 - Step 0c: the ball-swap test, showing that swapping the two balls' order leaves the output unchanged.
+
+## Files
+
+Ablation scripts live in `robotnik_arm/experiments/ablation` and are run from that directory. Results are under `results/`, data under `data/`. Checkpoints (`results/models/*.pt` and the matching `.npz`) are gitignored. Each logged run also has a copy under `results/stage2/runs/`, written by `stage2_log.py`.
+
+`STATUS.md`, `STAGE1_RESULTS.md`, and `results/stage2_config.json` describe the Stage 1 winner at 80.6 mm, before DeepSets and before two balls. The ceiling in this report is the DeepSets retrain.
+
+### Shared code
+
+| Piece | Where |
+| --- | --- |
+| Expert base, including the no-reverse rule | `robotnik_arm/robotnik_arm_control.py`, `base_controller` |
+| Two-ball scene draw | same file, `make_catchable_pair` |
+| Sim, 42-D observation, rollout | `catch_env.py` (`CatchEnv`, `OBS_NAMES`, `rollout`, `ExpertDriver`) |
+| Hyperparameters and checkpoint names | `config.py`, `Config.name` |
+| Per-ball features (22-D ball, 33-D robot) | `ballset.py` |
+| Torch policies and the mixture loss | `policy.py`, `DeepSetsPolicy`, `gaussian_mixture_nll` |
+| Training step, oracle flag, mixture inputs | `train.py` (`deepsets_forward`, `apply_oracle_flag`, `mixture_inputs`) |
+| NumPy rollout and component choice | `np_policy.py`, `choose_component`, `MDNDriver`, `SetPolicyDriver` |
+| Expert collection | `robotnik_arm/collect_expert.py`, `robotnik_arm/docs/DATA_COLLECTION.md` |
+
+Checkpoint names follow `Config.name`. The ones this report uses:
+
+| Robot | Files under `results/models/` |
+| --- | --- |
+| Stage 1 start, 80.5 mm | `r25_p2_e0.5_hstack0.5s_d1000_s{0,1,2}.{pt,npz}` |
+| Base-frame ball, 65.7 mm | `r25_p2_e0.5_hstack0.5s_d1000_rel_add_s{0,1,2}` (see `run_relative.py`) |
+| Off-target parking, 38.2 mm | `r25_p2_e0.5_hstack0.5s_d2000_rel_add_s{0,1,2}` |
+| DeepSets ceiling, 36.1 mm | `r25_p2_e0.5_hstack0.5s_d2000_deepsets_s{0,1,2}` |
+| Goal-shift and planner retrains | `..._deepsets_matched_s{0,1,2}`, `..._deepsets_planned_s{0,1,2}` |
+| 50 Hz, 0.5 s execute, seed 0 | `r50_p1_e0.5_hstack0.24s_d2000_deepsets_s0` |
+| Two-ball squared error | `twoball_mse_s{0,1,2}` |
+| Oracle | `twoball_oracle_s{0,1,2}` |
+| MDN, K=5 | `twoball_mdn_s{0,1,2}` |
+
+### How Stage 1 ended
+
+| Claim | Script | Record |
+| --- | --- | --- |
+| 80.5 mm start | Stage 1 winner above | `results/relative_features.json` (`stage1`); per-seed `results/runs/r25_p2_e0.5_hstack0.5s_d1000_s{0,1,2}.json` |
+| 65.7 mm, ball measured from the base | `run_relative.py`; features in `config.py` `relative_ball` | `results/relative_features.json` |
+| 38.2 mm, 1,000 off-target parks | `gen_offset_parking.py`, `train_offset_parking.py` | `results/offset_parking_train.json`; demos `data/offset_parking/`; grid `data/grid50_offset.npz` |
+| Along-track / sideways split of that miss | `parking_split.py` | `results/parking_split.json`. This script loads the `rel_add` checkpoints (`r25_p2_e0.5_hstack0.5s_d2000_rel_add`) |
+| DART and the first DAgger attempt | `gen_quiet_dart.py`, `sweep_cov_noise.py`, `collect_dagger.py`, `compare_methods.py` | `results/method_compare.json`, `results/cov_sweep.json`, `results/recover_sweep.json` |
+| Where the DeepSets ceiling parks (600 errors) | `measure_park_cloud.py` | `results/learner_park_offsets.json`, `results/learner_park_cloud.npz` |
+| Goal-shift demos | `gen_offset_matched.py` | `data/offset_parking_matched/`, `data/grid50_offset_matched.npz` |
+| Planner demos (493 accepted, 507 refused) | `gen_offset_planned.py`, `PlannedOffsetDriver` | `data/offset_parking_planned/`, `data/grid50_offset_planned.npz` |
+| Paths shared by that comparison | `variety_data.py` | |
+| Train and the table that missed the bar | `train_offset_variety.py` | `results/offset_variety_compare.json`. It only reads `oneball_deepsets.json` |
+| 50 Hz, 0.5 s chunks, and the ceiling's along-track bias | `rate50_diagnostic.py` (`primary_cfg` is 50 Hz, 1 s predict, 0.5 s execute, 0.24 s history; `control_cfg` is the 25 Hz / 0.5 s execute run that was not started) | `results/stage2/rate50_diagnostic.json` |
+
+One-ball test seeds are `data/seeds.json`. The DeepSets ceiling was trained on `data/grid50_offset.npz`.
+
+### Stage 2
+
+| Claim | Script | Record |
+| --- | --- | --- |
+| DeepSets retrain, 36.1 mm and 6.0% at 10 mm | `train_deepsets_oneball.py` | `results/stage2/oneball_deepsets.json` |
+| Order does not change the output | `test_deepsets.py` | `results/stage2/deepsets_unit.json` |
+| Radius curve; 45 mm is the smallest mean over 80% | `radius_curve.py` | `results/stage2/radius_curve.json` |
+| Expert on 100 scenes | `verify_two_ball.py`. `SEPARATION = 0.180`, so this check still uses 180 mm, four times 45 mm | `results/stage2/expert_verify.json` |
+| 2,000 demos and 200 test scenes at 200 mm | `gen_two_ball.py`. `SEPARATION = 0.200` | `results/stage2/two_ball_data.json`; grid `data/grid50_two_ball.npz`; scenes `data/two_ball/test_scenes.json`; summary `data/two_ball/summary.json` |
+| Squared-error and oracle training | `train_two_ball.py` | `results/stage2/two_ball_train.json` |
+| Catch, miss, between-miss, and the decision table | `eval_two_ball.py`, `_reading` | `results/stage2/two_ball_compare.json` |
+| MDN training, five diagonal Gaussians | `train_mdn.py` (`n_components=5`, `sigma_floor=0.01`) | `results/stage2/two_ball_mdn_train.json` |
+| MDN rollouts, both selection rules, one ball and two | `eval_mdn.py` | `results/stage2/mdn_compare.json` |
+
+Rejected scenes are already counted in `two_ball_data.json`: `separation_rejects_total` is 25 on the training scenes and `test_separation_rejects_total` is 4.
+
+`train_two_ball.py` exits if the three seeds of a role hash to the same file, and writes the hashes into `two_ball_train.json`. Whether the squared-error robot's five catches are the same five scenes is in the per-seed rows of `two_ball_compare.json`.
+
+The ball-swap check is already code. `test_deepsets.py` permutes the balls, and `eval_mdn.check_mdn` checks ball-swap on the mixture plus agreement between the torch net and the NumPy export. `check_mdn` runs at the start of `train_mdn.py` and is a synthetic batch, not a saved Stage 2 table.
+
+### Tests in "What comes next"
+
+These six are not scripts yet. The pieces to extend:
+
+1. **K = 1.** `Config.n_components` in `config.py`. `train_mdn.py` passes `n_components=5`.
+2. **Training net against the NumPy rollout.** `policy.export_numpy` writes the `.npz`. `eval_mdn.check_mdn` compares torch and NumPy on a made-up batch. A comparison on real observations still has to be written.
+3. **Hand-off.** The one-ball pattern is `diagnose.py` and `run_relative.handoff_episode`. An MDN hand-off still has to be written; the driver to hand to is `MDNDriver`.
+4. **Weights on held-out states.** Training-row diagnostics are on the checkpoint under `meta.diagnostics`, and the last row of each seed is copied into `two_ball_mdn_train.json`.
+5. **What the components stand for.** Expert phases are `align`, `drive`, `orient`, `done` on `BaseNavState` in `robotnik_arm_control.py`. `expert_phase_tests.py` is an earlier Stage 1 probe, not this tagging job.
+6. **Base motion beside the chosen component.** `MDNDriver.act` already appends `choices` and `max_pi` on each replan.
 
 ## Glossary
 
