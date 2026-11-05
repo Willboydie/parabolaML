@@ -1,0 +1,56 @@
+{
+  "run_id": "20261105-160821-brake-residual",
+  "stage": "brake-residual",
+  "model": "r25_p2_e0.5_hstack0.5s_d2000_deepsets",
+  "note": "predicted minus label forward speed on held-out states in the last 2s before the stop",
+  "started": "2026-11-05T16:08:21",
+  "config": {
+    "window_s": 2.0,
+    "grid_hz": 50,
+    "seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "command": [
+    "brake_residual.py"
+  ],
+  "seeds": {
+    "test": 200
+  },
+  "git": {
+    "commit": "614d8e645ded851d5f3b5980127579311817d73c",
+    "dirty": true,
+    "diff_files": [
+      "?? robotnik_arm/experiments/ablation/brake_residual.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T16:11:04",
+  "metrics": {
+    "miss_mm": -0.05732648922403222,
+    "catch_rate": 0.495
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\brake_residual.json",
+      "bytes": 7686,
+      "sha256": "7283c4db57f0c1d62965cd991cde047082bb7e8780a871691d080cacca549d9c"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\brake_residual.png",
+      "bytes": 63684,
+      "sha256": "0f03c1b8d4edd6c6900e23a3c8f6b965fa06b79c694b947b0b4565ee51502d8f"
+    }
+  ]
+}

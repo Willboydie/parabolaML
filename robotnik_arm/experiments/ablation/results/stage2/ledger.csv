@@ -6,3 +6,4 @@ run_id,stage,model,miss_mm,catch_rate,record
 20261105-131038-twoball-mdn,twoball-mdn,mdn,,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-131038-twoball-mdn.json
 20261105-145900-mdn-compare,mdn-compare,mdn,1705.9934790860004,0.0016666666666666668,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-145900-mdn-compare.json
 20261105-151302-rate50-diagnostic,rate50-diagnostic,r50_p1_e0.5_hstack0.24s_d2000_deepsets,24.742102308587295,0.94,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-151302-rate50-diagnostic.json
+20261105-160821-brake-residual,brake-residual,r25_p2_e0.5_hstack0.5s_d2000_deepsets,-0.05732648922403222,0.495,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-160821-brake-residual.json
