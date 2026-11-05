@@ -1,0 +1,53 @@
+{
+  "run_id": "20261105-174735-mdn-premise",
+  "stage": "mdn-premise",
+  "model": "mse",
+  "note": "two-ball grid audit, and the two-ball squared-error robot on one-ball scenes",
+  "started": "2026-11-05T17:47:35",
+  "config": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "ceiling": false
+  },
+  "command": [
+    "premise_check.py"
+  ],
+  "seeds": {
+    "scenes": 200
+  },
+  "git": {
+    "commit": "1cf3d515001c548242dc5e4b9f53f3fddf34c536",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/results/stage2/mdn_premise.json",
+      " M robotnik_arm/experiments/ablation/results/stage2/runs/20261105-170630-handoff-stop.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_stop.json"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T17:47:37",
+  "metrics": {
+    "miss_mm": 855.2597480238406,
+    "catch_rate": 0.05499999999999999
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\mdn_premise.json",
+      "bytes": 7892,
+      "sha256": "eff90866b8311b8f81fe37cb6dc4febf6ad57f378f2d94b10075abd0fc1b2285"
+    }
+  ]
+}

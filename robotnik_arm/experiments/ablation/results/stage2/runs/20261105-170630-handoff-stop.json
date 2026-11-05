@@ -46,5 +46,17 @@
     "cuda": "13.0",
     "gpu": "NVIDIA RTX A4500 Laptop GPU",
     "pybullet": "unknown"
-  }
+  },
+  "ended": "2026-11-05T17:41:07",
+  "metrics": {
+    "miss_mm": 7.232527975302877,
+    "catch_rate": 0.08166666666666667
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\handoff_stop.json",
+      "bytes": 10796,
+      "sha256": "c39d6c006ba88dcc993268a85996ff7b914f3679b6078a28e69d17579f678cee"
+    }
+  ]
 }

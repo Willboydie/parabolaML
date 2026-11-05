@@ -10,3 +10,5 @@ run_id,stage,model,miss_mm,catch_rate,record
 20261105-170151-chunk-lookahead,chunk-lookahead,r25_p2_e0.5_hstack0.5s_d2000_deepsets,0.6787605118653959,0.5527619047619048,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-170151-chunk-lookahead.json
 20261105-170422-chunk-lookahead,chunk-lookahead,r25_p2_e0.5_hstack0.5s_d2000_deepsets,0.027947786024461078,0.5383,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-170422-chunk-lookahead.json
 20261105-172000-mdn-runtime,mdn-runtime,mdn,,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-172000-mdn-runtime.json
+20261105-170630-handoff-stop,handoff-stop,r25_p2_e0.5_hstack0.5s_d2000_deepsets,7.232527975302877,0.08166666666666667,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-170630-handoff-stop.json
+20261105-174735-mdn-premise,mdn-premise,mse,855.2597480238406,0.05499999999999999,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-174735-mdn-premise.json

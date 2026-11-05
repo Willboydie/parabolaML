@@ -174,7 +174,7 @@ def _reading(audit, mse_catch, mse_miss, ceiling_catch, published):
             'With DeepSets, the head sees the sum of one ball embedding instead of two.')
         label = 'two_ball_training_only'
     ref = ceiling_catch if ceiling_catch is not None else published['ceiling_catch_50mm']
-    ref_name = 'the ceiling in this harness' if ceiling_catch is not None else 'the published one-ball ceiling (86.5%)'
+    ref_name = 'the ceiling in this harness' if ceiling_catch is not None else 'the published one-ball ceiling'
     if mse_catch is None:
         control = 'The squared-error control has not been rolled out.'
         control_label = 'not_run'
