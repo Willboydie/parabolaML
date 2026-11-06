@@ -1,0 +1,51 @@
+{
+  "run_id": "20261105-185238-handoff-drive",
+  "stage": "handoff-drive",
+  "model": "mdn",
+  "note": "expert hand-off at launch, commitment, mid-drive, stop and arm; mse, oracle and mdn",
+  "started": "2026-11-05T18:52:38",
+  "config": {
+    "seeds": [
+      0
+    ],
+    "scenes": 100
+  },
+  "command": [
+    "handoff_drive.py"
+  ],
+  "seeds": {
+    "scenes": 100
+  },
+  "git": {
+    "commit": "83cd41ff41680e0ffcf96ab88ae0c8f9b14c4ee5",
+    "dirty": true,
+    "diff_files": [
+      "?? robotnik_arm/experiments/ablation/handoff_drive.py",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.s0.partial.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive_smoke.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-182847-handoff-drive.json"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T19:32:22",
+  "metrics": {
+    "miss_mm": 980.2996877203556,
+    "catch_rate": 0.01
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\handoff_drive.json",
+      "bytes": 21175,
+      "sha256": "b740cf398beb886de81cd1fb6aef2a310fa403c2e86f91edc80fef413705de51"
+    }
+  ]
+}

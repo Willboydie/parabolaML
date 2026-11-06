@@ -7,7 +7,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from ballset import BALL_FEAT_DIM, ROBOT_FEAT_DIM, ball_features, robot_features
+from ballset import ROBOT_FEAT_DIM, ball_dim, ball_features, robot_features
 from config import BASELINE, Config, GRID_HZ, policy_frames  # noqa: F401
 
 TRUNK_WIDTH = 512
@@ -58,10 +58,13 @@ class DeepSetsPolicy(nn.Module):
     """Shared per-ball MLP, summed, then the same 3 x 512 trunk as the flat policy.
 
     ``phi`` is two ReLU layers of width ``phi_width`` and a linear map to ``embed_dim``.
-    The ball stack is flattened (oldest frame first) before ``phi``, so a 13-frame
-    history is 286 inputs. Summing the embeddings makes the output invariant to ball
-    order. The oracle flag is one input channel and stays 0 unless the config asks
-    for it.
+    With stacked history the ball frames are flattened before ``phi``. A 13-frame
+    history is 286 inputs with velocity and acceleration, and 130 without them.
+    With GRU history a 128-unit GRU reads each ball's frames in order. ``phi`` then
+    sees that ball's latest frame concatenated with the final GRU state.
+    Summing the embeddings makes the output invariant to ball order. The oracle
+    flag is the last ball channel and stays 0 unless the config asks for it.
+    The robot frames stay a flat stack in either case.
     """
 
     def __init__(self, cfg, act_dim=18):
@@ -69,7 +72,15 @@ class DeepSetsPolicy(nn.Module):
         if cfg.encoder != 'deepsets' or cfg.pool != 'sum' or cfg.phi_layers != 2:
             raise ValueError('DeepSetsPolicy is the sum-pooled two-layer phi')
         self.cfg, self.act_dim = cfg, act_dim
-        ball_in = cfg.frames * BALL_FEAT_DIM
+        self.ball_dim = ball_dim(cfg.ball_vel_acc)
+        if cfg.history == 'gru':
+            self.ball_gru = nn.GRU(self.ball_dim, GRU_HIDDEN, batch_first=True)
+            ball_in = self.ball_dim + GRU_HIDDEN
+        elif cfg.history in ('stack', 'none'):
+            self.ball_gru = None
+            ball_in = cfg.frames * self.ball_dim
+        else:
+            raise ValueError(f'unknown history {cfg.history}')
         width = cfg.phi_width
         self.phi = nn.Sequential(
             nn.Linear(ball_in, width), nn.ReLU(),
@@ -95,8 +106,8 @@ class DeepSetsPolicy(nn.Module):
             self.head = nn.Linear(TRUNK_WIDTH, cfg.horizon * act_dim)
         else:
             raise ValueError(f'unknown head {cfg.head}')
-        self.register_buffer('ball_mean', torch.zeros(BALL_FEAT_DIM))
-        self.register_buffer('ball_std', torch.ones(BALL_FEAT_DIM))
+        self.register_buffer('ball_mean', torch.zeros(self.ball_dim))
+        self.register_buffer('ball_std', torch.ones(self.ball_dim))
         self.register_buffer('robot_mean', torch.zeros(ROBOT_FEAT_DIM))
         self.register_buffer('robot_std', torch.ones(ROBOT_FEAT_DIM))
         self.register_buffer('act_mean', torch.zeros(cfg.horizon, act_dim))
@@ -119,11 +130,21 @@ class DeepSetsPolicy(nn.Module):
         target = 1.0 - float(self.cfg.sigma_floor)
         nn.init.constant_(self.sigma_head.bias, math.log(math.expm1(target)))
 
+    def _ball_embed(self, balls):
+        """Normalized balls (B, N, F, D) to a summed embedding (B, embed)."""
+        if self.ball_gru is None:
+            return self.phi(balls.reshape(balls.shape[0], balls.shape[1], -1)).sum(dim=1)
+        batch, n_balls, frames, dim = balls.shape
+        seq = balls.reshape(batch * n_balls, frames, dim)
+        _out, hidden = self.ball_gru(seq)
+        latest = torch.cat((seq[:, -1], hidden[-1]), dim=-1)
+        return self.phi(latest).view(batch, n_balls, -1).sum(dim=1)
+
     def _encode(self, robot, balls):
-        """robot (B, F, 33), balls (B, N, F, 22). Returns the trunk features (B, 512)."""
+        """robot (B, F, 33), balls (B, N, F, D). Returns the trunk features (B, 512)."""
         balls = ((balls - self.ball_mean) / self.ball_std).clamp(-INPUT_CLIP, INPUT_CLIP)
         robot = ((robot - self.robot_mean) / self.robot_std).clamp(-INPUT_CLIP, INPUT_CLIP)
-        emb = self.phi(balls.reshape(balls.shape[0], balls.shape[1], -1)).sum(dim=1)
+        emb = self._ball_embed(balls)
         z = torch.cat((robot.reshape(robot.shape[0], -1), emb), dim=1)
         return self.trunk(z)
 
@@ -146,7 +167,8 @@ class DeepSetsPolicy(nn.Module):
 
     def forward(self, frames):
         """frames: (B, F, 42) raw one-ball observations, oldest first."""
-        return self.forward_set(robot_features(frames), ball_features(frames).unsqueeze(1))
+        balls = ball_features(frames, include_vel_acc=self.cfg.ball_vel_acc).unsqueeze(1)
+        return self.forward_set(robot_features(frames), balls)
 
     @torch.no_grad()
     def predict(self, frames):

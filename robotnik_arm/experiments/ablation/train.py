@@ -22,23 +22,27 @@ DATA = ROOT / 'data'
 
 
 def apply_oracle_flag(balls, chosen, oracle):
-    """Set the oracle channel on ``chosen``. ``balls`` is (B, N, 22) or (B, F, N, 22)."""
+    """Set the oracle channel on ``chosen``. The oracle flag is the last ball channel."""
     if not oracle:
         return balls
     balls = balls.clone()
-    balls[..., 21] = 0
+    balls[..., -1] = 0
     for slot in range(balls.shape[-2]):
         take = chosen == slot
         if balls.ndim == 3:
-            balls[take, slot, 21] = 1
+            balls[take, slot, -1] = 1
         else:
-            balls[take, :, slot, 21] = 1
+            balls[take, :, slot, -1] = 1
     return balls
+
+
+def _ball_features(obs, cfg):
+    return ball_features(obs, include_vel_acc=cfg.ball_vel_acc)
 
 
 def deepsets_forward(model, frames, chosen):
     """frames (B, F, N, 42), chosen (B,). Returns the normalized action chunk."""
-    balls = apply_oracle_flag(ball_features(frames), chosen, model.cfg.oracle)
+    balls = apply_oracle_flag(_ball_features(frames, model.cfg), chosen, model.cfg.oracle)
     balls = balls.permute(0, 2, 1, 3).contiguous()
     robot = robot_features(frames[:, :, 0])
     return model.forward_set(robot, balls)
@@ -47,12 +51,12 @@ def deepsets_forward(model, frames, chosen):
 def mixture_inputs(model, frames, chosen, two_ball):
     """Ball and robot tensors for the mixture head. Oracle flag stays 0 unless configured."""
     if two_ball:
-        balls = apply_oracle_flag(ball_features(frames), chosen, model.cfg.oracle)
+        balls = apply_oracle_flag(_ball_features(frames, model.cfg), chosen, model.cfg.oracle)
         balls = balls.permute(0, 2, 1, 3).contiguous()
         robot = robot_features(frames[:, :, 0])
     else:
         robot = robot_features(frames)
-        balls = ball_features(frames).unsqueeze(1)
+        balls = _ball_features(frames, model.cfg).unsqueeze(1)
     return robot, balls
 
 
@@ -122,11 +126,11 @@ def main():
             # The one-ball grid has a single ball, so the pool is over rows.
             # Two-ball stats pool both slots, after the oracle flag is written.
             if two_ball:
-                balls = apply_oracle_flag(ball_features(obs), chosen, cfg.oracle)
+                balls = apply_oracle_flag(_ball_features(obs, cfg), chosen, cfg.oracle)
                 balls = balls.reshape(-1, balls.shape[-1])
                 robot = robot_features(obs[:, 0])
             else:
-                balls = ball_features(obs)
+                balls = _ball_features(obs, cfg)
                 robot = robot_features(obs)
             model.ball_mean.copy_(balls.mean(0))
             model.ball_std.copy_(balls.std(0).clamp_min(1e-3))

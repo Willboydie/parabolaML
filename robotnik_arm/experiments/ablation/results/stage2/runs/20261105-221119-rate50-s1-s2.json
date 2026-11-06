@@ -1,0 +1,92 @@
+{
+  "run_id": "20261105-221119-rate50-s1-s2",
+  "stage": "rate50-s1-s2",
+  "model": "r50_p1_e0.5_hstack0.24s_d2000_deepsets",
+  "note": "seeds 1 and 2 of the 50 Hz 1s predict / 0.5s execute DeepSets backbone",
+  "started": "2026-11-05T22:11:19",
+  "config": {
+    "rate_hz": 50,
+    "predict_s": 1.0,
+    "execute_frac": 0.5,
+    "history": "stack",
+    "history_s": 0.24,
+    "demos": 2000,
+    "drop_time": false,
+    "features": "world",
+    "encoder": "deepsets",
+    "pool": "sum",
+    "oracle": false,
+    "phi_width": 256,
+    "phi_layers": 2,
+    "embed_dim": 128,
+    "head": "mse",
+    "n_components": 5,
+    "sigma_floor": 0.01
+  },
+  "command": [
+    "rate50_seeds12.py"
+  ],
+  "seeds": {
+    "test": 200,
+    "train_seeds": [
+      1,
+      2
+    ]
+  },
+  "git": {
+    "commit": "83cd41ff41680e0ffcf96ab88ae0c8f9b14c4ee5",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      "?? robotnik_arm/experiments/ablation/handoff_drive.py",
+      "?? robotnik_arm/experiments/ablation/rate50_seeds12.py",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.s0.partial.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive_smoke.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-182847-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-185238-handoff-drive.json"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-05T22:25:27",
+  "metrics": {
+    "miss_mm": 34.38501851614936,
+    "catch_rate": 0.9225000000000001
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\rate50_s1_s2.json",
+      "bytes": 4959,
+      "sha256": "bddb83aebe451c43b1ad9e7e0020bf17fe28a0a68b218c345da4aec70d9ec2e8"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\r50_p1_e0.5_hstack0.24s_d2000_deepsets_s1.pt",
+      "bytes": 5808539,
+      "sha256": "31de2fc1da02d0812197fb7d8f0db7d8d15c89e40869fb5a88da4e58f3087fa4"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\r50_p1_e0.5_hstack0.24s_d2000_deepsets_s1.npz",
+      "bytes": 5793748,
+      "sha256": "7509b72ba9f33f09ce7288e1565a65128f5abbee9780c425eec3ca373b58c834"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\r50_p1_e0.5_hstack0.24s_d2000_deepsets_s2.pt",
+      "bytes": 5808539,
+      "sha256": "f7b6ecca71293fac9561a67ffeca701abb0664623264a871a82a53bf90c490ea"
+    },
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\models\\r50_p1_e0.5_hstack0.24s_d2000_deepsets_s2.npz",
+      "bytes": 5793748,
+      "sha256": "e4928fe847428b436c5e7ef464caaf1cfb5f6d0bba54c965793ba351870e940b"
+    }
+  ]
+}

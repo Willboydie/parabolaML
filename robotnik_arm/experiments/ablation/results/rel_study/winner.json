@@ -1,0 +1,29 @@
+{
+  "config": {
+    "rate_hz": 25,
+    "predict_s": 2.0,
+    "execute_frac": 0.5,
+    "history": "none",
+    "history_s": 0.0,
+    "demos": 1000,
+    "drop_time": false,
+    "features": "rel_add",
+    "encoder": "flat",
+    "pool": "sum",
+    "oracle": false,
+    "ball_vel_acc": true,
+    "phi_width": 256,
+    "phi_layers": 2,
+    "embed_dim": 128,
+    "head": "mse",
+    "n_components": 5,
+    "sigma_floor": 0.01
+  },
+  "name": "r25_p2_e0.5_hnone_d1000_rel_add",
+  "catch": 0.03166666666666667,
+  "catch_sd": 0.012583057392117914,
+  "miss": 59.07722483971071,
+  "miss_sd": 6.755701257348006,
+  "median_miss": 46.127103594468934,
+  "n": 3
+}

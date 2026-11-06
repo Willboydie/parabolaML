@@ -1,0 +1,100 @@
+{
+  "run_id": "20261106-004934-command-vs-actual",
+  "stage": "command-vs-actual",
+  "model": "r25_p2_e0.5_hstack0.5s_d2000_deepsets",
+  "note": "commanded and actual forward speed on the 25 Hz hand-off",
+  "started": "2026-11-06T00:49:34",
+  "config": {
+    "rate_hz": 25,
+    "switch_before_stop_s": 1.0
+  },
+  "command": [
+    "command_vs_actual.py"
+  ],
+  "seeds": {
+    "test": 200,
+    "seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "git": {
+    "commit": "83cd41ff41680e0ffcf96ab88ae0c8f9b14c4ee5",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/ballset.py",
+      " M robotnik_arm/experiments/ablation/config.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? \"Progress Report.md\"",
+      "?? notes",
+      "?? report.tex",
+      "?? robotnik_arm/experiments/ablation/_dart_bias_stats.py",
+      "?? robotnik_arm/experiments/ablation/along_parking.py",
+      "?? robotnik_arm/experiments/ablation/chunk_replay.py",
+      "?? robotnik_arm/experiments/ablation/command_vs_actual.py",
+      "?? robotnik_arm/experiments/ablation/dump_r50_parking.py",
+      "?? robotnik_arm/experiments/ablation/handoff_drive.py",
+      "?? robotnik_arm/experiments/ablation/hold_replay.py",
+      "?? robotnik_arm/experiments/ablation/plot_r50_parking.py",
+      "?? robotnik_arm/experiments/ablation/rate50_seeds12.py",
+      "?? robotnik_arm/experiments/ablation/replan_replay.py",
+      "?? robotnik_arm/experiments/ablation/results/logs/r50_p1_e0.5_hstack0.24s_d2000_deepsets_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r50_p1_e0.5_hstack0.24s_d2000_deepsets_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/plots/",
+      "?? robotnik_arm/experiments/ablation/results/stage2/along_parking.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/chunk_replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/dart_bias_summary.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/diverge_along_track.png",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.s0.partial.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive_smoke.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/hold_replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/parking_bias.png",
+      "?? robotnik_arm/experiments/ablation/results/stage2/path_adherence.png",
+      "?? robotnik_arm/experiments/ablation/results/stage2/r50_parking_errors.npz",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_novellacc.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_novellacc_gru.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_s1_s2.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/replan_replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-182847-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-185238-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-221119-rate50-s1-s2.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-232629-hold-replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261106-000316-chunk-replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261106-003545-along-parking.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261106-003648-replan-replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/track_paths.npz",
+      "?? robotnik_arm/experiments/ablation/results/stage2/track_paths_summary.json",
+      "?? robotnik_arm/experiments/ablation/score_novellacc_gru_s0.py",
+      "?? robotnik_arm/experiments/ablation/score_novellacc_s0.py",
+      "?? robotnik_arm/experiments/ablation/track_paths.py",
+      "?? robotnik_arm/experiments/ablation/train_novellacc_gru_s0.py",
+      "?? robotnik_arm/experiments/ablation/train_novellacc_s0.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-06T01:02:09",
+  "metrics": {
+    "miss_mm": 11.0016656791534
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\command_vs_actual.json",
+      "bytes": 6082,
+      "sha256": "2cc71df1759d526c23995eb62784349a6ad28453bebffe09e4a5a9042e4a8f58"
+    }
+  ]
+}

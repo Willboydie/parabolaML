@@ -12,3 +12,10 @@ run_id,stage,model,miss_mm,catch_rate,record
 20261105-172000-mdn-runtime,mdn-runtime,mdn,,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-172000-mdn-runtime.json
 20261105-170630-handoff-stop,handoff-stop,r25_p2_e0.5_hstack0.5s_d2000_deepsets,7.232527975302877,0.08166666666666667,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-170630-handoff-stop.json
 20261105-174735-mdn-premise,mdn-premise,mse,855.2597480238406,0.05499999999999999,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-174735-mdn-premise.json
+20261105-185238-handoff-drive,handoff-drive,mdn,980.2996877203556,0.01,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-185238-handoff-drive.json
+20261105-221119-rate50-s1-s2,rate50-s1-s2,r50_p1_e0.5_hstack0.24s_d2000_deepsets,34.38501851614936,0.9225000000000001,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-221119-rate50-s1-s2.json
+20261105-232629-hold-replay,hold-replay,expert,2.6533163429008506,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261105-232629-hold-replay.json
+20261106-000316-chunk-replay,chunk-replay,r25_p2_e0.5_hstack0.5s_d2000_deepsets,-0.5176783406530147,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261106-000316-chunk-replay.json
+20261106-003545-along-parking,along-parking,expert,0.06113116478265389,1.0,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261106-003545-along-parking.json
+20261106-003648-replan-replay,replan-replay,r25_p2_e0.5_hstack0.5s_d2000_deepsets,-0.22941777999292023,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261106-003648-replan-replay.json
+20261106-004934-command-vs-actual,command-vs-actual,r25_p2_e0.5_hstack0.5s_d2000_deepsets,11.0016656791534,,C:\Users\Admin\vaults\parabolaML\robotnik_arm\experiments\ablation\results\stage2\runs\20261106-004934-command-vs-actual.json

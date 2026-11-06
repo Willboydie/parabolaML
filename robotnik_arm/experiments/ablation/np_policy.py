@@ -46,6 +46,36 @@ class NumpyPolicy:
         if 'gru__weight_ih_l0' in w:
             self.gru = (w['gru__weight_ih_l0'].T.copy(), w['gru__weight_hh_l0'].T.copy(),
                         w['gru__bias_ih_l0'], w['gru__bias_hh_l0'])
+        self.ball_gru = None
+        if 'ball_gru__weight_ih_l0' in w:
+            self.ball_gru = (w['ball_gru__weight_ih_l0'].T.copy(), w['ball_gru__weight_hh_l0'].T.copy(),
+                             w['ball_gru__bias_ih_l0'], w['ball_gru__bias_hh_l0'])
+
+    def _gru_final(self, x, gru):
+        """Last hidden state of one sequence. ``x`` is (F, input)."""
+        w_ih, w_hh, b_ih, b_hh = gru
+        n_h = w_hh.shape[0]
+        h = np.zeros(n_h, dtype=np.float32)
+        gi_all = x @ w_ih + b_ih
+        for gi in gi_all:
+            gh = h @ w_hh + b_hh
+            r = _sigmoid(gi[:n_h] + gh[:n_h])
+            u = _sigmoid(gi[n_h:2 * n_h] + gh[n_h:2 * n_h])
+            n = np.tanh(gi[2 * n_h:] + r * gh[2 * n_h:])
+            h = (1.0 - u) * n + u * h
+        return h
+
+    def _embed_balls(self, balls):
+        """Normalized balls (N, F, D) to one summed embedding."""
+        emb = np.zeros(self.cfg.embed_dim, dtype=np.float32)
+        for ball in balls:
+            if self.ball_gru is None:
+                feat = ball.reshape(1, -1)
+            else:
+                hidden = self._gru_final(ball, self.ball_gru)
+                feat = np.concatenate((ball[-1], hidden))[None]
+            emb = emb + self._mlp(feat, self.phi, relu_last=False)[0]
+        return emb
 
     def _mlp(self, x, layers, relu_last):
         for i, (weight, bias) in enumerate(layers):
@@ -75,18 +105,16 @@ class NumpyPolicy:
 
     def _encode_set(self, frames, oracle_slot):
         """frames (N, F, 42) to trunk features."""
-        balls = ball_features(frames)
+        balls = self._ball_features(frames)
         if self.cfg.oracle:
             balls = np.array(balls, copy=True)
-            balls[..., 21] = 0.0
+            balls[..., -1] = 0.0
             if oracle_slot is not None:
-                balls[int(oracle_slot), :, 21] = 1.0
+                balls[int(oracle_slot), :, -1] = 1.0
         balls = np.clip((balls - self.ball_mean) / self.ball_std, -INPUT_CLIP, INPUT_CLIP)
         robot = robot_features(frames[0])
         robot = np.clip((robot - self.robot_mean) / self.robot_std, -INPUT_CLIP, INPUT_CLIP)
-        emb = np.zeros(self.cfg.embed_dim, dtype=np.float32)
-        for ball in balls:
-            emb = emb + self._mlp(ball.reshape(1, -1), self.phi, relu_last=False)[0]
+        emb = self._embed_balls(balls)
         z = np.concatenate((robot.reshape(-1), emb))
         return self._mlp(z, self.trunk, relu_last=True)
 
@@ -109,13 +137,16 @@ class NumpyPolicy:
         chunk = (mu * self.act_std + self.act_mean).astype(np.float32)
         return raw, pi, mu, chunk
 
+    def _ball_features(self, frames):
+        return ball_features(frames, include_vel_acc=self.cfg.ball_vel_acc)
+
     def _predict_deepsets(self, frames):
         """frames: (F, 42) one-ball observations, oldest first."""
-        ball = ball_features(frames)
+        ball = self._ball_features(frames)
         robot = robot_features(frames)
         ball = np.clip((ball - self.ball_mean) / self.ball_std, -INPUT_CLIP, INPUT_CLIP)
         robot = np.clip((robot - self.robot_mean) / self.robot_std, -INPUT_CLIP, INPUT_CLIP)
-        emb = self._mlp(ball.reshape(1, -1), self.phi, relu_last=False)[0]
+        emb = self._embed_balls(ball[None])
         z = np.concatenate((robot.reshape(-1), emb))
         z = self._mlp(z, self.trunk, relu_last=True)
         out = (z @ self.head[0] + self.head[1]).reshape(self.cfg.horizon, -1)
@@ -131,18 +162,16 @@ class NumpyPolicy:
             raise RuntimeError('predict_set is the DeepSets path')
         if self.mixture is not None:
             raise RuntimeError('a mixture checkpoint selects a component in MDNDriver')
-        balls = ball_features(frames)
+        balls = self._ball_features(frames)
         if self.cfg.oracle:
             balls = np.array(balls, copy=True)
-            balls[..., 21] = 0.0
+            balls[..., -1] = 0.0
             if oracle_slot is not None:
-                balls[int(oracle_slot), :, 21] = 1.0
+                balls[int(oracle_slot), :, -1] = 1.0
         balls = np.clip((balls - self.ball_mean) / self.ball_std, -INPUT_CLIP, INPUT_CLIP)
         robot = robot_features(frames[0])
         robot = np.clip((robot - self.robot_mean) / self.robot_std, -INPUT_CLIP, INPUT_CLIP)
-        emb = np.zeros(self.cfg.embed_dim, dtype=np.float32)
-        for ball in balls:
-            emb = emb + self._mlp(ball.reshape(1, -1), self.phi, relu_last=False)[0]
+        emb = self._embed_balls(balls)
         z = np.concatenate((robot.reshape(-1), emb))
         z = self._mlp(z, self.trunk, relu_last=True)
         out = (z @ self.head[0] + self.head[1]).reshape(self.cfg.horizon, -1)

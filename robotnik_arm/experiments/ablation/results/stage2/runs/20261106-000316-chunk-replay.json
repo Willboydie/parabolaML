@@ -1,0 +1,79 @@
+{
+  "run_id": "20261106-000316-chunk-replay",
+  "stage": "chunk-replay",
+  "model": "r25_p2_e0.5_hstack0.5s_d2000_deepsets",
+  "note": "one open-loop chunk of the DeepSets ceiling from 1 s before the expert stop",
+  "started": "2026-11-06T00:03:16",
+  "config": {
+    "switch_before_stop_s": 1.0,
+    "hold_s": 0.04
+  },
+  "command": [
+    "chunk_replay.py",
+    "--limit",
+    "200",
+    "--workers",
+    "16"
+  ],
+  "seeds": {
+    "test": 200,
+    "seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "git": {
+    "commit": "83cd41ff41680e0ffcf96ab88ae0c8f9b14c4ee5",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/ballset.py",
+      " M robotnik_arm/experiments/ablation/config.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? \"Progress Report.md\"",
+      "?? report.tex",
+      "?? robotnik_arm/experiments/ablation/chunk_replay.py",
+      "?? robotnik_arm/experiments/ablation/handoff_drive.py",
+      "?? robotnik_arm/experiments/ablation/hold_replay.py",
+      "?? robotnik_arm/experiments/ablation/rate50_seeds12.py",
+      "?? robotnik_arm/experiments/ablation/results/logs/r50_p1_e0.5_hstack0.24s_d2000_deepsets_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r50_p1_e0.5_hstack0.24s_d2000_deepsets_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.s0.partial.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive_smoke.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/hold_replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_novellacc.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_s1_s2.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-182847-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-185238-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-221119-rate50-s1-s2.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-232629-hold-replay.json",
+      "?? robotnik_arm/experiments/ablation/score_novellacc_s0.py",
+      "?? robotnik_arm/experiments/ablation/train_novellacc_s0.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-06T00:16:33",
+  "metrics": {
+    "miss_mm": -0.5176783406530147
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\chunk_replay.json",
+      "bytes": 4735,
+      "sha256": "5f938c6281ca736a5d6a4ceb29857445650f6ef47c7032fe495422d7256dcb59"
+    }
+  ]
+}

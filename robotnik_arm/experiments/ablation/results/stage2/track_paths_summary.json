@@ -1,0 +1,8 @@
+{
+  "n_rollouts": 600,
+  "along_at_m2s_mm": -7.989543854033943,
+  "along_at_stop_mm": 3.805296420865816,
+  "along_at_p1s_mm": 7.3823785690803945,
+  "cross_at_stop_mm": -1.031560204725285,
+  "path_distance_midroute_mm": 12.24947579611813
+}

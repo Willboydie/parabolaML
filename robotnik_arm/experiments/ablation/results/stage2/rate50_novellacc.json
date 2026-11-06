@@ -1,0 +1,57 @@
+{
+  "name": "r50_p1_e0.5_hstack0.24s_d2000_deepsets_novellacc_s0",
+  "dropped": "ball world velocity, world acceleration, base-frame velocity, base-frame acceleration",
+  "kept_ball": "world position, base-frame position, ball minus end effector, oracle flag",
+  "ball_dim": 10,
+  "frames": 13,
+  "phi_in": 130,
+  "params": 1404932,
+  "train_rows": 1697332,
+  "final_loss": 0.021478386595845222,
+  "train_time_s": 229.20270252227783,
+  "test": {
+    "n": 200,
+    "catch_rate": 0.0,
+    "miss_mm": 844.0021163619098,
+    "median_miss_mm": 727.1085493501905,
+    "catch_rate_50mm": 0.01,
+    "compensation": {
+      "along": {
+        "regression": -0.15346757734069594,
+        "median_when_offset": 0.21978462493656514,
+        "n_offset": 194,
+        "base_abs_median": 184.88494958003056,
+        "miss_abs_median": 141.11635573858993
+      },
+      "cross": {
+        "regression": -0.37758090026658686,
+        "median_when_offset": -0.4195551401590023,
+        "n_offset": 193,
+        "base_abs_median": 470.20495261612314,
+        "miss_abs_median": 669.464221525039
+      }
+    },
+    "split": {
+      "n": 200,
+      "base_offset_median_mm": 513.6211241511076,
+      "base_offset_p90_mm": 1174.4454755277293,
+      "base_along_median_mm": -106.2150004674912,
+      "base_along_mean_mm": -226.5087086065136,
+      "base_along_abs_median_mm": 184.88494958003056,
+      "base_cross_abs_median_mm": 470.20495261612314,
+      "frac_ahead": 0.325,
+      "miss_along_median_mm": -119.74559046127288,
+      "miss_along_abs_median_mm": 141.11635573858993,
+      "miss_cross_abs_median_mm": 669.464221525039,
+      "miss_up_abs_median_mm": 96.44444518679467,
+      "miss_3d_mean_mm": 844.0021163619098,
+      "miss_3d_median_mm": 727.1085493501905,
+      "frac_up_at_least_10mm": 0.935,
+      "energy_share": {
+        "along": 0.38192018086300755,
+        "cross": 0.5952936036319866,
+        "up": 0.02278621550500603
+      }
+    }
+  }
+}

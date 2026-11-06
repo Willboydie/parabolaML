@@ -1,0 +1,24 @@
+{
+  "model": "r25_p2_e0.5_hnone_d1000_rel_add",
+  "weights": [
+    "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\rel_study\\models\\sweep\\r25_p2_e0.5_hnone_d1000_rel_add_s0.npz",
+    "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\rel_study\\models\\sweep\\r25_p2_e0.5_hnone_d1000_rel_add_s1.npz",
+    "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\rel_study\\models\\sweep\\r25_p2_e0.5_hnone_d1000_rel_add_s2.npz"
+  ],
+  "brake": {
+    "median_s": 1.92,
+    "p25_s": 0.7600000000000002,
+    "p75_s": 3.3,
+    "n_stopped": 379,
+    "n_episodes": 600
+  },
+  "path": {
+    "n_rollouts": 600,
+    "path_distance_midroute_mm": 13.140375058747097
+  },
+  "n_parking": 600,
+  "along_median_mm": 11.915204485488566,
+  "cross_median_mm": -2.1819053371625166,
+  "frac_ahead": 0.6633333333333333,
+  "dart_note": "On the 949349 clean labels of the new high-amplitude DART demos, 0 are negative (minimum 0.000 m/s)."
+}

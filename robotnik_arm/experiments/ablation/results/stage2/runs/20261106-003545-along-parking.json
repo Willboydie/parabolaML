@@ -1,0 +1,93 @@
+{
+  "run_id": "20261106-003545-along-parking",
+  "stage": "along-parking",
+  "model": "expert",
+  "note": "slide the parked expert 50 and 100 mm forward and back",
+  "started": "2026-11-06T00:35:45",
+  "config": {
+    "along_mm": [
+      50,
+      -50,
+      100,
+      -100
+    ],
+    "rate_hz": 1000
+  },
+  "command": [
+    "along_parking.py"
+  ],
+  "seeds": {
+    "train": 20
+  },
+  "git": {
+    "commit": "83cd41ff41680e0ffcf96ab88ae0c8f9b14c4ee5",
+    "dirty": true,
+    "diff_files": [
+      "M robotnik_arm/experiments/ablation/ballset.py",
+      " M robotnik_arm/experiments/ablation/config.py",
+      " M robotnik_arm/experiments/ablation/np_policy.py",
+      " M robotnik_arm/experiments/ablation/policy.py",
+      " M robotnik_arm/experiments/ablation/results/stage2/ledger.csv",
+      " M robotnik_arm/experiments/ablation/train.py",
+      "?? \"Progress Report.md\"",
+      "?? notes",
+      "?? report.tex",
+      "?? robotnik_arm/experiments/ablation/_canvas_data.py",
+      "?? robotnik_arm/experiments/ablation/_tail.py",
+      "?? robotnik_arm/experiments/ablation/_write_canvas.py",
+      "?? robotnik_arm/experiments/ablation/along_parking.py",
+      "?? robotnik_arm/experiments/ablation/chunk_replay.py",
+      "?? robotnik_arm/experiments/ablation/command_vs_actual.py",
+      "?? robotnik_arm/experiments/ablation/dump_r50_parking.py",
+      "?? robotnik_arm/experiments/ablation/handoff_drive.py",
+      "?? robotnik_arm/experiments/ablation/hold_replay.py",
+      "?? robotnik_arm/experiments/ablation/plot_r50_parking.py",
+      "?? robotnik_arm/experiments/ablation/rate50_seeds12.py",
+      "?? robotnik_arm/experiments/ablation/replan_replay.py",
+      "?? robotnik_arm/experiments/ablation/results/logs/r50_p1_e0.5_hstack0.24s_d2000_deepsets_s1.train.log",
+      "?? robotnik_arm/experiments/ablation/results/logs/r50_p1_e0.5_hstack0.24s_d2000_deepsets_s2.train.log",
+      "?? robotnik_arm/experiments/ablation/results/plots/",
+      "?? robotnik_arm/experiments/ablation/results/stage2/chunk_replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive.s0.partial.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/handoff_drive_smoke.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/hold_replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/parking_bias.png",
+      "?? robotnik_arm/experiments/ablation/results/stage2/r50_parking_errors.npz",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_novellacc.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_novellacc_gru.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/rate50_s1_s2.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-182847-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-185238-handoff-drive.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-221119-rate50-s1-s2.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261105-232629-hold-replay.json",
+      "?? robotnik_arm/experiments/ablation/results/stage2/runs/20261106-000316-chunk-replay.json",
+      "?? robotnik_arm/experiments/ablation/score_novellacc_gru_s0.py",
+      "?? robotnik_arm/experiments/ablation/score_novellacc_s0.py",
+      "?? robotnik_arm/experiments/ablation/train_novellacc_gru_s0.py",
+      "?? robotnik_arm/experiments/ablation/train_novellacc_s0.py"
+    ]
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.3",
+    "system": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA RTX A4500 Laptop GPU",
+    "pybullet": "unknown"
+  },
+  "ended": "2026-11-06T00:36:48",
+  "metrics": {
+    "miss_mm": 0.06113116478265389,
+    "catch_rate": 1.0
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\Admin\\vaults\\parabolaML\\robotnik_arm\\experiments\\ablation\\results\\stage2\\along_parking.json",
+      "bytes": 1922,
+      "sha256": "465f2b8ceccb87afcb001ab54bc8b608050c6d0fd1e7b2aa1e09ff4000b36522"
+    }
+  ]
+}

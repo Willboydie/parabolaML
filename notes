@@ -1,0 +1,6 @@
+remove DeepSets ball encoder
+
+DART failure to correct parking errors - because the drift was a bias offset with a certain structure,
+not gaussian wandering.
+
+parking forward-along-track bias - what causes it?

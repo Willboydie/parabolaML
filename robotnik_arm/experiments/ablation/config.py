@@ -76,6 +76,7 @@ class Config:
     encoder: str = 'flat'        # flat | deepsets
     pool: str = 'sum'            # deepsets pooling; sum is order-invariant
     oracle: bool = False         # deepsets oracle flag is 1 on the chosen ball
+    ball_vel_acc: bool = True    # deepsets ball vector includes velocity and acceleration
     phi_width: int = 256
     phi_layers: int = 2
     embed_dim: int = 128
@@ -120,6 +121,8 @@ class Config:
             extra += f'_{self.encoder}'
         if self.oracle:
             extra += '_oracle'
+        if not self.ball_vel_acc:
+            extra += '_novellacc'
         if self.head == 'mdn':
             extra += f'_mdn{self.n_components}'
         return f'r{self.rate_hz}_p{self.predict_s:g}_e{self.execute_frac:g}_h{hist}_d{self.demos}{extra}'
